@@ -41,6 +41,8 @@ private:
 	SDL_Window* mWindow;
 	//Renderer
 	SDL_Renderer* mRenderer;
+	//open gl context
+	SDL_GLContext context;
 	//game should continue to run
 	bool mIsRunning;
 

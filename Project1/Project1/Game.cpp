@@ -1,13 +1,15 @@
 #pragma once
 
 #include "Game.h"
-#include"Box2D\Box2D.h"
+#include<Box2D.h>
 #include "SpriteComponent.h"
 #include "BGSpriteComponent.h"
 #include <math.h>
 #include<memory>
 #include<SDL.h>
 #include<SDL_image.h>
+#include<GL/glew.h>
+
 
 Game::Game()
 {
@@ -29,8 +31,40 @@ bool Game::Start()
 		return false;
 	}
 
+	//setting the open gl attributes
+
+	//Select the core profile
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
+
+	//Set up the version
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3);
+
+	//Requesting a color buffer for 8 bits per RGBA channel
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,8);
+
+	//Enable double buffering
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
+
+	//Force opengl to use hardware acceleration
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
+
+
 	//creating sdl window
-	mWindow = SDL_CreateWindow("Game Program", 100, 100, 1024, 769, 0);
+	mWindow = SDL_CreateWindow("Game Program", 100, 100, 1024, 769,SDL_WINDOW_OPENGL);
+	context = SDL_GL_CreateContext(mWindow);
+
+
+	glewExperimental = GLU_TRUE;
+	if (glewInit() != GLEW_OK)
+	{
+		SDL_Log("Failed to initialize glew");
+		return false;
+	}
+	glGetError();
 
 	if (!mWindow)
 	{
@@ -108,6 +142,7 @@ void Game::UnloadData()
 
 void Game::Shutdown()
 {
+	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(mWindow);
 	SDL_DestroyRenderer(mRenderer);
 	IMG_Quit();
@@ -169,18 +204,29 @@ void Game::ProcessInput()
 
 void Game::GenerateOutput()
 {
+	/*
 	//Clear the back buffer
 	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
 	SDL_RenderClear(mRenderer);
+	
 
 	for (auto sprite : mSprites)
 	{
 		sprite->Draw(mRenderer);
 	}
 
-
 	//Swap front and back buffers
 	SDL_RenderPresent(mRenderer);
+	*/
+
+	//Set the clear color
+	glClearColor(0.86f, 0.86f, 0.86f, 1.0f);
+
+	//Clear the buffer
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	//Swap the buffers
+	SDL_GL_SwapWindow(mWindow);
 }
 
 void Game::UpdateGame()
