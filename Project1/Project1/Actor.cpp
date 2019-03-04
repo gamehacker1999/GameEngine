@@ -91,3 +91,7 @@ void Actor::ProcessInput(const Uint8* state)
 		ActorInput(state);
 	}
 }
+
+void Actor::ActorInput(const Uint8 * state)
+{
+}
