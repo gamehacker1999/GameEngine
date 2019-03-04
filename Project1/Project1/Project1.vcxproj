@@ -142,6 +142,7 @@
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Vector2.cpp" />
+    <ClCompile Include="VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Desktop\CSCI 103\linked\linked\targetver.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Vector2.h" />
+    <ClInclude Include="VertexArray.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
