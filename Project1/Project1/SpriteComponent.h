@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "SDL.h"
 #include "SDL_image.h"
+#include"Shader.h"
 class SpriteComponent :
 	public Component
 {
@@ -10,7 +11,7 @@ public:
 	SpriteComponent(class Actor* owner, int drawOrder=100);
 	~SpriteComponent();
 
-	virtual void Draw(SDL_Renderer* renderer);
+	virtual void Draw(Shader* shader);
 	virtual void SetTexture(SDL_Texture* texture);
 
 	//Getter and setters

@@ -8,7 +8,7 @@ public:
 	BGSpriteComponent(Actor* owner, int drawOrder=10);
 
 	//update draw overriden from parent
-	void Draw(SDL_Renderer* renderer) override;
+	void Draw(Shader* shader) override;
 	void Update(float deltaTime) override;
 	//Set textures for background
 	void SetBGTextures(const std::vector<SDL_Texture* >&textures);

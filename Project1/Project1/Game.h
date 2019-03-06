@@ -5,6 +5,8 @@
 #include "Vector2.h"
 #include "SpriteComponent.h"
 #include "Ship.h"
+#include"VertexArray.h"
+#include "Shader.h"
 class Game
 {
 public:
@@ -26,6 +28,8 @@ public:
 	SDL_Texture* GetTexture(std::string file);
 
 	SDL_Texture* LoadTexture(std::string filename);
+
+	bool LoadShaders();
 
 	~Game();
 
@@ -63,11 +67,20 @@ private:
 	void LoadData();
 	void UnloadData();
 
+	//Initialize sprite verts
+	VertexArray *spriteVerts;
+	float vertexBuffer[4];
+	unsigned int indexBuffer[6];
+	void InitSpriteVerts();
+
 	//Fields and functions for sprites
 	std::vector <class SpriteComponent*> mSprites;
 
 	//Ship
 	class Ship* mShip;
+
+	//Working with shaders
+	Shader* spriteShader;
 
 	
 };

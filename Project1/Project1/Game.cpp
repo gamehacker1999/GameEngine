@@ -9,6 +9,7 @@
 #include<SDL.h>
 #include<SDL_image.h>
 #include<GL/glew.h>
+#include"VertexArray.h"
 
 
 Game::Game()
@@ -37,8 +38,8 @@ bool Game::Start()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
 
 	//Set up the version
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,6);
 
 	//Requesting a color buffer for 8 bits per RGBA channel
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,8);
@@ -71,6 +72,14 @@ bool Game::Start()
 		SDL_Log("Window not created: &s", SDL_GetError());
 		return false;
 	}
+
+	if (!LoadShaders())
+	{
+		SDL_Log("Shaders could not be loaded");
+		return false;
+	}
+
+	InitSpriteVerts();
 
 	//Creating renderer
 	mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -138,6 +147,8 @@ void Game::UnloadData()
 	}
 
 	textures.clear();
+	delete spriteShader;
+	delete mShip;
 }
 
 void Game::Shutdown()
@@ -224,7 +235,12 @@ void Game::GenerateOutput()
 
 	//Clear the buffer
 	glClear(GL_COLOR_BUFFER_BIT);
-
+	spriteShader->SetActive();
+	spriteVerts->SetActive();
+	for (auto sprite : mSprites)
+	{
+		sprite->Draw(spriteShader);
+	}
 	//Swap the buffers
 	SDL_GL_SwapWindow(mWindow);
 }
@@ -381,4 +397,31 @@ void Game::RemoveSprite(SpriteComponent* sprite)
 	{
 		mSprites.erase(iter);
 	}
+}
+
+void Game::InitSpriteVerts()
+{
+	float vertices[] = {
+	-0.5f,  0.5f, 0.f, 0.f, 0.f, // top left
+	 0.5f,  0.5f, 0.f, 1.f, 0.f, // top right
+	 0.5f, -0.5f, 0.f, 1.f, 1.f, // bottom right
+	-0.5f, -0.5f, 0.f, 0.f, 1.f  // bottom left
+	};
+
+	unsigned int indices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+	spriteVerts = new VertexArray(vertices, 4, indices, 6);
+}
+
+bool Game::LoadShaders()
+{
+	spriteShader = new Shader();
+	if (!spriteShader->Load("Basic.vert", "Basic.frag"))
+	{
+		return false;
+	}
+	spriteShader->SetActive();
+	return true;
 }

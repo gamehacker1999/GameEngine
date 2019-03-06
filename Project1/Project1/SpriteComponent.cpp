@@ -28,9 +28,9 @@ void SpriteComponent::SetTexture(SDL_Texture* texture)
 	SDL_QueryTexture(mTexture, nullptr, nullptr, &mTexWidth, &mTexHeight);
 }
 
-void SpriteComponent::Draw(SDL_Renderer* renderer)
+void SpriteComponent::Draw(Shader* shader)
 {
-	if (mTexture)
+	/*if (mTexture)
 	{
 		SDL_Rect r; //Rect to represent the sprite
 
@@ -50,5 +50,10 @@ void SpriteComponent::Draw(SDL_Renderer* renderer)
 		    nullptr, //Point of rotation
 			SDL_FLIP_NONE //Flip behavior
 		);
-	}
+	}*/
+	glDrawElements(
+		GL_TRIANGLES,//type of primitive to draw
+		6,//Number of indices in the index buffer
+		GL_UNSIGNED_INT,//Type of each index
+		nullptr);// Usually nullptr
 }

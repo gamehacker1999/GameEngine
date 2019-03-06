@@ -49,10 +49,10 @@ void BGSpriteComponent::Update(float deltaTime)
 
 }
 
-void BGSpriteComponent::Draw(SDL_Renderer* renderer)
+void BGSpriteComponent::Draw(Shader* shader)
 {
 	// Draw each background texture
-	for (auto& bg : mBGTextures)
+	/*for (auto& bg : mBGTextures)
 	{
 		SDL_Rect r;
 		// Assume screen size dimensions
@@ -68,5 +68,5 @@ void BGSpriteComponent::Draw(SDL_Renderer* renderer)
 			nullptr,
 			&r
 		);
-	}
+	}*/
 }
