@@ -13,7 +13,7 @@ public:
 	void SetActive();
 private:
 	//tries to compile the specific shader
-	bool CompileShader(const std::string& fileName, GLenum shaderType, GLuint outShader);
+	bool CompileShader(const std::string& fileName, GLenum shaderType, GLuint& outShader);
 	//Test weather shader compiled successfully
 	bool IsCompiled(GLuint shader);
 	//Text weather glsl programs link

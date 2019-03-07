@@ -16,7 +16,7 @@ Shader::~Shader()
 	shaderProgram = 0;
 }
 
-bool Shader::CompileShader(const std::string& fileName, GLenum shaderType, GLuint outShader)
+bool Shader::CompileShader(const std::string& fileName, GLenum shaderType, GLuint& outShader)
 {
 	//open file
 	std::fstream shaderFile(fileName);
@@ -80,8 +80,8 @@ bool Shader::Load(const std::string& vertName, const std::string& fragName)
 
 	//Linking the vertex and frag shaders
 	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
+	glAttachShader(shaderProgram, vertexShader);
 	glLinkProgram(shaderProgram);
 
 	if (!IsValidProgram())
