@@ -57,18 +57,18 @@ bool Mesh::Load(std::string& filename, Game* game)
 	int vertSize = 8;
 
 	//Loading the textures array in the mesh
-	const rapidjson::Value& textures = doc[textures];
+	const rapidjson::Value& texturesJson = doc["textures"];
 
-	if (!textures.IsArray() || textures.Size() < 1)
+	if (!texturesJson.IsArray() || texturesJson.Size() < 1)
 	{
 		SDL_Log("There were no textures in the mesh");
 		return false;
 	}
 
 	//if the textures were loaded
-	for (rapidjson::SizeType i = 0; i < textures.Size(); i++)
+	for (rapidjson::SizeType i = 0; i < texturesJson.Size(); i++)
 	{
-		std::string texName = textures[i].GetString();
+		std::string texName = texturesJson[i].GetString();
 		//get the texture from the game
 		Texture* t = game->GetTexture(texName);
 		if (t == nullptr)

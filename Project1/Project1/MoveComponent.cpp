@@ -16,7 +16,7 @@ void MoveComponent::Update(float deltaTime)
 		Quaternion rot = mOwner->GetRotation();
 		float angle = angularSpeed * deltaTime;
 		//create quaternion for rotation about up axis
-		Quaternion inc = Quaternion(Vector3::UnitZ, angle);
+		Quaternion inc = Quaternion(Vector3::UnitX, angle);
 		//concatenate rot and inc
 		Quaternion::Concatenate(rot, inc);
 		mOwner->SetRotation(rot);

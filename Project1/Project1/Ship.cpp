@@ -3,6 +3,7 @@
 #include "Ship.h"
 #include "AnimSpriteComponent.h"
 #include"InputComponent.h"
+#include"MoveComponent.h"
 #include <SDL.h>
 #include<vector>
 
@@ -25,10 +26,7 @@ Ship::Ship(Game* game):Actor(game)
 
 	SetPosition(Vector3(xPos, yPos,0));
 
-
-
-
-	//InputComponent* ic = new InputComponent(this);
+    MoveComponent* ic = new MoveComponent(this);
 }
 
 void Ship::UpdateActor(float deltaTime)
