@@ -97,14 +97,14 @@ void Game::LoadData()
 
 	//Create actor for background
 	Actor* temp = new Actor(this);
-	temp->SetPosition(Vector2(0, 0));
+	temp->SetPosition(Vector3(0, 0,0));
 
 	//Create a far background
 	BGSpriteComponent* bg = new BGSpriteComponent(temp);
 	bg->SetScreenSize(Vector2(1024, 768));
 	std::vector<Texture* >bgtexts = {
 		GetTexture("Assets/Farback01.png"),
-		GetTexture("Assets/Farback01.png"),
+		GetTexture("Assets/Farback02.png"),
 
 	};
 
@@ -112,14 +112,14 @@ void Game::LoadData()
 	bg->SetScrollSpeed(-100);
 
 	//Create a near background
-	//bg = new BGSpriteComponent(temp, 50);
-	//bg->SetScreenSize(Vector2(1024, 768));
-	//bgtexts = {
-	//	GetTexture("Assets/Stars.png"),
-	//	GetTexture("Assets/Stars.png")
-	//};	
-	//bg->SetBGTextures(bgtexts);
-	//bg->SetScrollSpeed(-200);
+	bg = new BGSpriteComponent(temp, 50);
+	bg->SetScreenSize(Vector2(1024, 768));
+	bgtexts = {
+		GetTexture("Assets/Stars.png"),
+		GetTexture("Assets/Stars.png")
+	};	
+	bg->SetBGTextures(bgtexts);
+	bg->SetScrollSpeed(-200);
 }
 
 void Game::UnloadData()

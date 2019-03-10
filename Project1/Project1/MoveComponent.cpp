@@ -13,14 +13,18 @@ void MoveComponent::Update(float deltaTime)
 
 	if (angularSpeed != DBL_MIN)
 	{
-		float rot = mOwner->GetRotation();
-		rot += angularSpeed * deltaTime;
+		Quaternion rot = mOwner->GetRotation();
+		float angle = angularSpeed * deltaTime;
+		//create quaternion for rotation about up axis
+		Quaternion inc = Quaternion(Vector3::UnitZ, angle);
+		//concatenate rot and inc
+		Quaternion::Concatenate(rot, inc);
 		mOwner->SetRotation(rot);
 	}
 
 	if (forwardSpeed != DBL_MIN)
 	{
-		Vector2 pos = mOwner->GetPosition();
+		Vector3 pos = mOwner->GetPosition();
 		pos += mOwner->GetPosition()*forwardSpeed*deltaTime;
 		mOwner->SetPosition(pos);
 	}

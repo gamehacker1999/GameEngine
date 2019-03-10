@@ -8,8 +8,8 @@ Actor::Actor(class Game* game)
 {
 	mGame = game;
 	mState = State::EActive;
-	position = Vector2(-512,384);
-	mRotation = 0;
+	position = Vector3(-512,384,0);
+	mRotation = Quaternion(0,0,0,0);
 	mScale = 1.0f;
 	recomputeWorldTransform = true; //atleast one transform will happen
 	mGame->AddActor(this);
@@ -108,8 +108,8 @@ void Actor::CreateWorldTransform()
 		//They have to be multiplied in reverse order because 
 		//Transform is computed right to left
 		worldTransform = Matrix4::CreateScale(mScale);
-		worldTransform *= Matrix4::CreateRotationZ(mRotation);
-		worldTransform *= Matrix4::CreateTranslation(Vector3(position.vx, position.vy,0));
+		worldTransform *= Matrix4::CreateFromQuaternion(mRotation);
+		worldTransform *= Matrix4::CreateTranslation(position);
 
 		for (auto comp : mComponents)
 		{

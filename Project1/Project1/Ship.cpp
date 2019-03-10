@@ -20,10 +20,10 @@ Ship::Ship(Game* game):Actor(game)
 	};
 	asc->SetAnimTextures(anims);
 
-	float xPos = GetPosition().vx+asc->GetTexWidth();
-	float yPos = GetPosition().vy-asc->GetTexHeight();
+	float xPos = GetPosition().x+asc->GetTexWidth();
+	float yPos = GetPosition().y-asc->GetTexHeight();
 
-	SetPosition(Vector2(xPos, yPos));
+	SetPosition(Vector3(xPos, yPos,0));
 
 
 
@@ -34,9 +34,9 @@ Ship::Ship(Game* game):Actor(game)
 void Ship::UpdateActor(float deltaTime)
 {
 	Actor::UpdateActor(deltaTime);
-	Vector2 pos = GetPosition();
-	pos.vx += mRightSpeed * deltaTime;
-	pos.vy += mDownSpeed * deltaTime;
+	Vector3 pos = GetPosition();
+	pos.x += mRightSpeed * deltaTime;
+	pos.y += mDownSpeed * deltaTime;
 
 
 	SetPosition(pos);
