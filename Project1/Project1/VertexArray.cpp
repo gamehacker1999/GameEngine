@@ -13,7 +13,7 @@ VertexArray::VertexArray(const float * verts, unsigned int numVerts, const unsig
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer); //gl array corresponds to vertex buffer
 
 	glBufferData(GL_ARRAY_BUFFER, //The recently made vertex buffer
-		numVerts * 3 * sizeof(float), //Assume each vertex has 3 coordinates which are floats
+		numVerts * 5 * sizeof(float), //Assume each vertex has 3 coordinates which are floats
 		verts, //Source of the vertices
 		GL_STATIC_DRAW); //Import the data once and draw it frequently
 
@@ -38,8 +38,19 @@ VertexArray::VertexArray(const float * verts, unsigned int numVerts, const unsig
 		3, //number of components
 		GL_FLOAT, //Type of components
 		GL_FALSE, //only used for integral types
-		sizeof(float) * 3, //Stride, size of each vertex
+		sizeof(float) * 5, //Stride, size of each vertex
 		0);// offset from start of vertex to this attribute
+
+	//Attribute for texture coordinates
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(
+		1,
+		2,
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(float) * 5,
+		reinterpret_cast<void*>(sizeof(float) * 3)
+	);
 }
 
 VertexArray::~VertexArray()

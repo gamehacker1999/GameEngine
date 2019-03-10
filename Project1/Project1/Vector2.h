@@ -23,6 +23,8 @@ class Vector2
 		Vector2& operator =(const Vector2 v);
 		void Normalize();
 		Vector2 Normalized();
+		Vector2 Transform(const Vector2& vec, const float mat[3][3], float w= 1.0f);
+		
 
 };
 

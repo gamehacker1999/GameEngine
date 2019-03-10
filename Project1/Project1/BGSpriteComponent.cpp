@@ -17,7 +17,7 @@ BGSpriteComponent::~BGSpriteComponent()
 {
 }
 
-void BGSpriteComponent::SetBGTextures(const std::vector<SDL_Texture* >&textures)
+void BGSpriteComponent::SetBGTextures(const std::vector<Texture* >&textures)
 {
 	//Setting background textures
 	int count = 0;
@@ -25,9 +25,10 @@ void BGSpriteComponent::SetBGTextures(const std::vector<SDL_Texture* >&textures)
 	{
 		BGTexture temp;
 		temp.mTexture = tex;
-		temp.mOffset.vx = count * mScreenSize.vx;
+		temp.mOffset.vx = count * mScreenSize.vx+1;
 		temp.mOffset.vy = 0;
 		mBGTextures.emplace_back(temp);
+		SpriteComponent::SetTexture(tex);
 		count++;
 	}
 }
@@ -43,7 +44,7 @@ void BGSpriteComponent::Update(float deltaTime)
 		//if this is completely offscreen reset it to the right of the previous BG
 		if (bg.mOffset.vx < -mScreenSize.vx)
 		{
-			bg.mOffset.vx = (mBGTextures.size() - 1)*mScreenSize.vx - 1;
+			bg.mOffset.vx = (mBGTextures.size() - 1)*mScreenSize.vx-5;
 		}
 	}
 
@@ -51,22 +52,27 @@ void BGSpriteComponent::Update(float deltaTime)
 
 void BGSpriteComponent::Draw(Shader* shader)
 {
-	// Draw each background texture
-	/*for (auto& bg : mBGTextures)
+	for (auto &tex : mBGTextures)
 	{
-		SDL_Rect r;
-		// Assume screen size dimensions
-		r.w = static_cast<int>(mScreenSize.vx);
-		r.h = static_cast<int>(mScreenSize.vy);
-		// Center the rectangle around the position of the owner
-		r.x = static_cast<int>(mOwner->GetPosition().vx - r.w / 2 + bg.mOffset.vx);
-		r.y = static_cast<int>(mOwner->GetPosition().vy - r.h / 2 + bg.mOffset.vy);
+		if (tex.mTexture)
+		{
+			Matrix4 scaleMat = Matrix4::CreateScale(Vector3((float)mTexWidth, (float)mTexHeight, 0));
 
-		// Draw this background
-		SDL_RenderCopy(renderer,
-			bg.mTexture,
-			nullptr,
-			&r
-		);
-	}*/
+			auto mat = tex.BackgroundWorldTransform();
+
+			//Multiplying this with the owning actor's transform
+			Matrix4 world = scaleMat * mat;
+
+			//Setting the transform
+			shader->SetMatrixUniform("uWorldTransform", world);
+
+			tex.mTexture->SetActive();
+
+			//Drawing the sprite
+			glDrawElements(GL_TRIANGLES, //Kinds of polygon
+				6, //Number of verts
+				GL_UNSIGNED_INT, //Value of index buffer
+				nullptr);
+		}
+	}
 }

@@ -21,39 +21,35 @@ SpriteComponent::~SpriteComponent()
 	mOwner->GetGame()->RemoveSprite(this);
 }
 
-void SpriteComponent::SetTexture(SDL_Texture* texture)
+void SpriteComponent::SetTexture(Texture* texture)
 {
 	mTexture = texture;
-
-	SDL_QueryTexture(mTexture, nullptr, nullptr, &mTexWidth, &mTexHeight);
+	mTexHeight = texture->GetHeight();
+	mTexWidth = texture->GetWidth();
 }
 
 void SpriteComponent::Draw(Shader* shader)
 {
-	/*if (mTexture)
+
+	//OpenGl implementation of Draw
+
+	if (mTexture)
 	{
-		SDL_Rect r; //Rect to represent the sprite
+		//Creating a scale matrix for the sprite size
+		Matrix4 scaleMat = Matrix4::CreateScale(Vector3((float)mTexWidth, (float)mTexHeight, 0));
 
-		//Scaling the width and height of the sprite based on the scale of the owner actor
-		r.w = static_cast<int>(mTexWidth*mOwner->GetScale());
-		r.h = static_cast<int>(mTexHeight*mOwner->GetScale());
-		//centering the position of the rect
-		r.x = static_cast<int>(mOwner->GetPosition().vx - r.w / 2);
-		r.y = static_cast<int>(mOwner->GetPosition().vy - r.h / 2);
+		//Multiplying this with the owning actor's transform
+		Matrix4 world = scaleMat * mOwner->GetWorldTransform();
 
-		//Draw the sprite
-		SDL_RenderCopyEx(renderer,
-			mTexture, //Texture to draw
-			nullptr, // Source rect
-			&r, // Destination rect
-			mOwner->GetRotation()*180/M_PI, // Convert rotation radians to degrees
-		    nullptr, //Point of rotation
-			SDL_FLIP_NONE //Flip behavior
-		);
-	}*/
-	glDrawElements(
-		GL_TRIANGLES,//type of primitive to draw
-		6,//Number of indices in the index buffer
-		GL_UNSIGNED_INT,//Type of each index
-		nullptr);// Usually nullptr
+		//Setting the transform
+		shader->SetMatrixUniform("uWorldTransform", world);
+
+		mTexture->SetActive();
+
+		//Drawing the sprite
+		glDrawElements(GL_TRIANGLES, //Kinds of polygon
+			6, //Number of verts
+			GL_UNSIGNED_INT, //Value of index buffer
+			nullptr);
+	}
 }

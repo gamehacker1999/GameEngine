@@ -38,8 +38,8 @@ bool Game::Start()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
 
 	//Set up the version
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,6);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3);
 
 	//Requesting a color buffer for 8 bits per RGBA channel
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,8);
@@ -55,9 +55,8 @@ bool Game::Start()
 
 
 	//creating sdl window
-	mWindow = SDL_CreateWindow("Game Program", 100, 100, 1024, 769,SDL_WINDOW_OPENGL);
+	mWindow = SDL_CreateWindow("Game Program", 100, 100, 1024, 768,SDL_WINDOW_OPENGL);
 	context = SDL_GL_CreateContext(mWindow);
-
 
 	glewExperimental = GLU_TRUE;
 	if (glewInit() != GLEW_OK)
@@ -81,14 +80,6 @@ bool Game::Start()
 
 	InitSpriteVerts();
 
-	//Creating renderer
-	mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
-	if (!mRenderer)
-	{
-		SDL_Log("Window not created &s", SDL_GetError());
-		return false;
-	}
 
 	IMG_Init(IMG_INIT_PNG|IMG_INIT_JPG);
 
@@ -106,14 +97,14 @@ void Game::LoadData()
 
 	//Create actor for background
 	Actor* temp = new Actor(this);
-	temp->SetPosition(Vector2(512, 384));
+	temp->SetPosition(Vector2(0, 0));
 
 	//Create a far background
 	BGSpriteComponent* bg = new BGSpriteComponent(temp);
 	bg->SetScreenSize(Vector2(1024, 768));
-	std::vector<SDL_Texture* >bgtexts = {
+	std::vector<Texture* >bgtexts = {
 		GetTexture("Assets/Farback01.png"),
-		GetTexture("Assets/Farback02.png"),
+		GetTexture("Assets/Farback01.png"),
 
 	};
 
@@ -121,14 +112,14 @@ void Game::LoadData()
 	bg->SetScrollSpeed(-100);
 
 	//Create a near background
-	bg = new BGSpriteComponent(temp, 50);
-	bg->SetScreenSize(Vector2(1024, 768));
-	bgtexts = {
-		GetTexture("Assets/Stars.png"),
-		GetTexture("Assets/Stars.png")
-	};	
-	bg->SetBGTextures(bgtexts);
-	bg->SetScrollSpeed(-200);
+	//bg = new BGSpriteComponent(temp, 50);
+	//bg->SetScreenSize(Vector2(1024, 768));
+	//bgtexts = {
+	//	GetTexture("Assets/Stars.png"),
+	//	GetTexture("Assets/Stars.png")
+	//};	
+	//bg->SetBGTextures(bgtexts);
+	//bg->SetScrollSpeed(-200);
 }
 
 void Game::UnloadData()
@@ -143,12 +134,11 @@ void Game::UnloadData()
 	// Destroy textures
 	for (auto i : textures)
 	{
-		SDL_DestroyTexture(i.second);
+		i.second->Unload();
 	}
 
 	textures.clear();
-	delete spriteShader;
-	delete mShip;
+
 }
 
 void Game::Shutdown()
@@ -215,28 +205,21 @@ void Game::ProcessInput()
 
 void Game::GenerateOutput()
 {
-	/*
-	//Clear the back buffer
-	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
-	SDL_RenderClear(mRenderer);
-	
-
-	for (auto sprite : mSprites)
-	{
-		sprite->Draw(mRenderer);
-	}
-
-	//Swap front and back buffers
-	SDL_RenderPresent(mRenderer);
-	*/
-
 	//Set the clear color
 	glClearColor(0.86f, 0.86f, 0.86f, 1.0f);
 
 	//Clear the buffer
 	glClear(GL_COLOR_BUFFER_BIT);
+
 	spriteShader->SetActive();
 	spriteVerts->SetActive();
+
+	glEnable(GL_BLEND);
+	glBlendFunc(
+		GL_SRC_ALPHA,
+		GL_ONE_MINUS_SRC_ALPHA
+	);
+
 	for (auto sprite : mSprites)
 	{
 		sprite->Draw(spriteShader);
@@ -278,6 +261,8 @@ void Game::UpdateGame()
 
 	for (auto actor : mPendingActors)
 	{
+		//compute world transform before adding into the game
+		actor->CreateWorldTransform();
 		mActors.emplace_back(actor);
 	}
 
@@ -334,44 +319,33 @@ void Game::RemoveActor(Actor* actor)
 	}
 }
 
-SDL_Texture* Game::LoadTexture(std::string filename)
-{
-	//Load from file
-	SDL_Surface* surface = IMG_Load(filename.c_str());
 
-	if (!surface)
-	{
-		SDL_Log("Image could not be loaded");
-		return nullptr;
-	}
-
-	//Create a texture
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(mRenderer, surface);
-	SDL_FreeSurface(surface);
-	if (!texture)
-	{
-		SDL_Log("Texture not made");
-		return nullptr;
-	}
-
-	return texture;
-}
-
-SDL_Texture* Game::GetTexture(std::string file)
+Texture* Game::GetTexture(std::string file)
 {
 	auto it = textures.find(file);
+	Texture* tex = nullptr;
 
 	if (it != textures.end())
 	{
-		return textures[file];
+		tex = it->second;
 	}
 
 	else
 	{
-		SDL_Texture* temp = LoadTexture(file);
-		textures.emplace(file, temp);
-		return temp;
+		tex = new Texture();
+		if (tex->Load(file))
+		{
+			textures.emplace(file, tex);
+		}
+
+		else
+		{
+			delete tex;
+			tex = nullptr;
+		}
 	}
+
+	return tex;
 }
 
 
@@ -418,10 +392,12 @@ void Game::InitSpriteVerts()
 bool Game::LoadShaders()
 {
 	spriteShader = new Shader();
-	if (!spriteShader->Load("Basic.vert", "Basic.frag"))
+	if (!spriteShader->Load("Sprite.vert", "Sprite.frag"))
 	{
 		return false;
 	}
 	spriteShader->SetActive();
+	Matrix4 viewProjection = Matrix4::CreateSimpleViewProj(1024, 769);
+	spriteShader->SetMatrixUniform("uViewProj", viewProjection);
 	return true;
 }

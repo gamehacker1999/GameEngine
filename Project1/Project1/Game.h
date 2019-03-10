@@ -7,6 +7,7 @@
 #include "Ship.h"
 #include"VertexArray.h"
 #include "Shader.h"
+#include"Texture.h"
 class Game
 {
 public:
@@ -25,9 +26,9 @@ public:
 	void AddSprite(class SpriteComponent* sprite);
 	void RemoveSprite(class SpriteComponent* sprite);
 
-	SDL_Texture* GetTexture(std::string file);
+	Texture* GetTexture(std::string file);
 
-	SDL_Texture* LoadTexture(std::string filename);
+	//Texture* LoadTexture(std::string filename);
 
 	bool LoadShaders();
 
@@ -61,7 +62,7 @@ private:
 	bool mUpdatingActors;
 
 	//Texture fields 
-	std::map<std::string, SDL_Texture*> textures;
+	std::map<std::string,Texture*> textures;
 
 	//Function to load all data
 	void LoadData();
@@ -78,8 +79,6 @@ private:
 
 	//Ship
 	class Ship* mShip;
-
-	//Working with shaders
 	Shader* spriteShader;
 
 	

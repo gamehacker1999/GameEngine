@@ -2,6 +2,7 @@
 #include "Actor.h"
 #include "Ship.h"
 #include "AnimSpriteComponent.h"
+#include"InputComponent.h"
 #include <SDL.h>
 #include<vector>
 
@@ -11,14 +12,23 @@ Ship::Ship(Game* game):Actor(game)
 	mDownSpeed = 0;
 	mRightSpeed = 0;
 	AnimSpriteComponent* asc = new AnimSpriteComponent(this);
-	std::vector<SDL_Texture*> anims = {
+	std::vector<Texture*> anims = {
 		GetGame()->GetTexture("Assets/Ship01.png"),
 		GetGame()->GetTexture("Assets/Ship02.png"),
 		GetGame()->GetTexture("Assets/Ship03.png"),
 		GetGame()->GetTexture("Assets/Ship04.png"),
 	};
-
 	asc->SetAnimTextures(anims);
+
+	float xPos = GetPosition().vx+asc->GetTexWidth();
+	float yPos = GetPosition().vy-asc->GetTexHeight();
+
+	SetPosition(Vector2(xPos, yPos));
+
+
+
+
+	//InputComponent* ic = new InputComponent(this);
 }
 
 void Ship::UpdateActor(float deltaTime)
@@ -28,23 +38,6 @@ void Ship::UpdateActor(float deltaTime)
 	pos.vx += mRightSpeed * deltaTime;
 	pos.vy += mDownSpeed * deltaTime;
 
-	if (pos.vx < 25)
-	{
-		pos.vx = 25;
-	}
-
-	else if (pos.vx > 500.0f)
-	{
-		pos.vx = 500.0f;
-	}
-	if (pos.vy < 25.0f)
-	{
-		pos.vy = 25.0f;
-	}
-	else if (pos.vy > 743.0f)
-	{
-		pos.vy = 743.0f;
-	}
 
 	SetPosition(pos);
 }
@@ -65,11 +58,11 @@ void Ship::ProcessKeyboard(const Uint8* state)
 	// up/down
 	if (state[SDL_SCANCODE_S])
 	{
-		mDownSpeed += 300.0f;
+		mDownSpeed -= 300.0f;
 	}
 	if (state[SDL_SCANCODE_W])
 	{
-		mDownSpeed -= 300.0f;
+		mDownSpeed += 300.0f;
 	}
 }
 

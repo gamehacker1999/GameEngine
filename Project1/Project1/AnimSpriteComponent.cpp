@@ -17,7 +17,7 @@ AnimSpriteComponent::~AnimSpriteComponent()
 {
 }
 
-void AnimSpriteComponent::SetAnimTextures(const std::vector<SDL_Texture* >&textures)
+void AnimSpriteComponent::SetAnimTextures(const std::vector<Texture* >&textures)
 {
 	//Setting the textures and passing the current texture
 	mAnimTextures = textures;
@@ -42,4 +42,9 @@ void AnimSpriteComponent::Update(float deltaTime)
 		//Set the current texture
 		SetTexture(mAnimTextures[static_cast<int>(mCurrentFrame)]);
 	}
+}
+
+void AnimSpriteComponent::Draw(Shader* shader)
+{
+	SpriteComponent::Draw(shader);
 }

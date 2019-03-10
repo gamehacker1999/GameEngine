@@ -76,6 +76,14 @@ Vector2 Vector2::Normalized()
 	return vector2;
 }
 
+Vector2 Vector2::Transform(const Vector2& vec, const float mat[3][3], float w)
+{
+	Vector2 retVal;
+	retVal.vx = vec.vx * mat[0][0] + vec.vy * mat[1][0] + w * mat[2][0];
+	retVal.vx = vec.vx * mat[0][1] + vec.vy * mat[1][1] + w * mat[2][1];
+	return retVal;
+}
+
 Vector2& Vector2::operator*(float num)
 {
 	this->vy *= num;

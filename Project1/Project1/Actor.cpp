@@ -8,9 +8,10 @@ Actor::Actor(class Game* game)
 {
 	mGame = game;
 	mState = State::EActive;
-	position = Vector2();
+	position = Vector2(-512,384);
 	mRotation = 0;
 	mScale = 1.0f;
+	recomputeWorldTransform = true; //atleast one transform will happen
 	mGame->AddActor(this);
 }
 
@@ -33,8 +34,10 @@ void Actor::Update(float deltaTime)
 {
 	if (mState == State::EActive)
 	{
+		CreateWorldTransform();
 		UpdateComponents(deltaTime);
 		UpdateActor(deltaTime);
+		CreateWorldTransform();
 	}
 }
 
@@ -94,4 +97,23 @@ void Actor::ProcessInput(const Uint8* state)
 
 void Actor::ActorInput(const Uint8 * state)
 {
+}
+
+void Actor::CreateWorldTransform()
+{
+	if (recomputeWorldTransform)
+	{
+		//recomputeWorldTransform = false;
+		//Tranform order is translation, rotation, scale
+		//They have to be multiplied in reverse order because 
+		//Transform is computed right to left
+		worldTransform = Matrix4::CreateScale(mScale);
+		worldTransform *= Matrix4::CreateRotationZ(mRotation);
+		worldTransform *= Matrix4::CreateTranslation(Vector3(position.vx, position.vy,0));
+
+		for (auto comp : mComponents)
+		{
+			comp->OnUpdateWorldTransform();
+		}
+	}
 }

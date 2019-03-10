@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\glew-2.1.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\glew-2.1.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\Simple OpenGL Image Library\src;C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\glew-2.1.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\Simple OpenGL Image Library\projects\VC9\Debug;C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\glew-2.1.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -79,11 +79,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\glew-2.1.0\include;C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\Box2D;C:\Users\Shubham Sachdeva\Downloads\SDL2_image-2.0.4\include;C:\Users\Shubham Sachdeva\Desktop\SDL2-2.0.8\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\Simple OpenGL Image Library\src;C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\glew-2.1.0\include;C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\Box2D;C:\Users\Shubham Sachdeva\Downloads\SDL2_image-2.0.4\include;C:\Users\Shubham Sachdeva\Desktop\SDL2-2.0.8\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\glew-2.1.0\lib\Release\Win32;C:\Users\Shubham Sachdeva\Desktop\SDL2_image-2.0.4\lib\x86;C:\Users\Shubham Sachdeva\Downloads\SDL2_image-2.0.4\lib\x86;C:\Users\Shubham Sachdeva\Desktop\SDL2-2.0.8\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\Simple OpenGL Image Library\projects\VC9\Debug;C:\Users\Shubham Sachdeva\source\repos\GameEngine\Project1\Project1\glew-2.1.0\lib\Release\Win32;C:\Users\Shubham Sachdeva\Desktop\SDL2_image-2.0.4\lib\x86;C:\Users\Shubham Sachdeva\Downloads\SDL2_image-2.0.4\lib\x86;C:\Users\Shubham Sachdeva\Desktop\SDL2-2.0.8\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;glew32.lib;opengl32.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -137,11 +137,13 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Math.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="VertexArray.cpp" />
   </ItemGroup>
@@ -155,17 +157,22 @@
     <ClInclude Include="functions.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="InputComponent.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.frag" />
     <None Include="Basic.vert" />
+    <None Include="Sprite.frag" />
+    <None Include="Sprite.vert" />
+    <None Include="Transform.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
