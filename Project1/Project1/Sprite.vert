@@ -6,7 +6,8 @@ uniform mat4 uViewProj;
 
 //Vertex attributes, position and texture coordinates
 layout(location=0)in vec3 inPosition;
-layout(location=1)in vec2 inTextureCoordinates;
+layout(location=1)in vec3 inNormalCoordinates;
+layout(location=2)in vec2 inTextureCoordinates;
 
 //Add texture coordinates as output
 out vec2 fragTextureCoordinates;

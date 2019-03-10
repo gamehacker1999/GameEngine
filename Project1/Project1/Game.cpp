@@ -376,10 +376,10 @@ void Game::RemoveSprite(SpriteComponent* sprite)
 void Game::InitSpriteVerts()
 {
 	float vertices[] = {
-	-0.5f,  0.5f, 0.f, 0.f, 0.f, // top left
-	 0.5f,  0.5f, 0.f, 1.f, 0.f, // top right
-	 0.5f, -0.5f, 0.f, 1.f, 1.f, // bottom right
-	-0.5f, -0.5f, 0.f, 0.f, 1.f  // bottom left
+	-0.5f,  0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, // top left
+	 0.5f,  0.5f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, // top right
+	 0.5f, -0.5f, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, // bottom right
+	-0.5f, -0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f  // bottom left
 	};
 
 	unsigned int indices[] = {
