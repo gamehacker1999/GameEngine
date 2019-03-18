@@ -143,6 +143,7 @@ void Game::UnloadData()
 
 void Game::Shutdown()
 {
+	UnloadData();
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(mWindow);
 	SDL_DestroyRenderer(mRenderer);
