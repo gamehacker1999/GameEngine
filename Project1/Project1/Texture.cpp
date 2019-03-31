@@ -16,7 +16,7 @@ Texture::~Texture()
 {
 }
 
-bool Texture::Load(std::string& filename)
+bool Texture::Load(const std::string& filename)
 {
 	//Store number of channels
 	int channels = 0;

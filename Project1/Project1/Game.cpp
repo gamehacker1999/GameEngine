@@ -31,69 +31,24 @@ bool Game::Start()
 		SDL_Log("unable to to initialize SDL: &s", SDL_GetError());
 		return false;
 	}
-
-	//setting the open gl attributes
-
-	//Select the core profile
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
-
-	//Set up the version
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,3);
-
-	//Requesting a color buffer for 8 bits per RGBA channel
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,8);
-
-	//Enable double buffering
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
-
-	//Force opengl to use hardware acceleration
-	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
-
-
-	//creating sdl window
-	mWindow = SDL_CreateWindow("Game Program", 100, 100, 1024, 768,SDL_WINDOW_OPENGL);
-	context = SDL_GL_CreateContext(mWindow);
-
-	glewExperimental = GLU_TRUE;
-	if (glewInit() != GLEW_OK)
-	{
-		SDL_Log("Failed to initialize glew");
-		return false;
-	}
-	glGetError();
-
-	if (!mWindow)
-	{
-		SDL_Log("Window not created: &s", SDL_GetError());
-		return false;
-	}
-
-	if (!LoadShaders())
-	{
-		SDL_Log("Shaders could not be loaded");
-		return false;
-	}
-
-	InitSpriteVerts();
+	
+	//Setting up the renderer
+	renderer = new Renderer(this);
+	renderer->Initialize();
+	LoadData();
 
 
 	IMG_Init(IMG_INIT_PNG|IMG_INIT_JPG);
 
 	mIsRunning = true;
 	mTickerCount = SDL_GetTicks();
-
-	LoadData();
 	return true;
 }
 
 void Game::LoadData()
 {
 	//create a ship
-	mShip = new Ship(this);
+	/*mShip = new Ship(this);
 
 	//Create actor for background
 	Actor* temp = new Actor(this);
@@ -103,8 +58,8 @@ void Game::LoadData()
 	BGSpriteComponent* bg = new BGSpriteComponent(temp);
 	bg->SetScreenSize(Vector2(1024, 768));
 	std::vector<Texture* >bgtexts = {
-		GetTexture("Assets/Farback01.png"),
-		GetTexture("Assets/Farback02.png"),
+		renderer->GetTexture("Assets/Farback01.png"),
+		renderer->GetTexture("Assets/Farback02.png"),
 
 	};
 
@@ -115,11 +70,34 @@ void Game::LoadData()
 	bg = new BGSpriteComponent(temp, 50);
 	bg->SetScreenSize(Vector2(1024, 768));
 	bgtexts = {
-		GetTexture("Assets/Stars.png"),
-		GetTexture("Assets/Stars.png")
+		renderer->GetTexture("Assets/Stars.png"),
+		renderer->GetTexture("Assets/Stars.png")
 	};	
 	bg->SetBGTextures(bgtexts);
 	bg->SetScrollSpeed(-200);
+	*/
+
+	Actor* a = new Actor(this);
+	a->SetPosition(Vector3(200.0f, 75.0f, 0.0f));
+	a->SetScale(100.0f);
+	Quaternion q(Vector3::UnitZ, -Math::PiOver2);
+	q = Quaternion::Concatenate(q, Quaternion(Vector3::UnitZ, Math::Pi + Math::Pi / 4.0f));
+	a->SetRotation(q);
+	MeshComponent* mc = new MeshComponent(a);
+	mc->SetMesh(renderer->GetMesh("Assets/Cube.gpmesh"));
+
+	a = new Actor(this);
+	a->SetPosition(Vector3(200.0f, -75.0f, 0.0f));
+	a->SetScale(3.0f);
+	mc = new MeshComponent(a);
+	mc->SetMesh(renderer->GetMesh("Assets/Sphere.gpmesh"));
+
+	//setting up lights for the scene
+	renderer->SetAmbientLight(Vector3(0.2f, 0.2f, 0.2f));
+	DirectionalLight& dir = renderer->GetDirectionalLight();
+	dir.direction = Vector3(0.f, -1.f, 0.f);
+	dir.diffuseColor = Vector3(0.f, 0.1f, 0.f);
+	dir.speculariy= Vector3(0.5f, 1.f, 0.5f);
 }
 
 void Game::UnloadData()
@@ -131,24 +109,15 @@ void Game::UnloadData()
 		delete mActors.back();
 	}
 
-	// Destroy textures
-	for (auto i : textures)
-	{
-		i.second->Unload();
-	}
-
-	textures.clear();
+	renderer->UnloadData();
 
 }
 
 void Game::Shutdown()
 {
 	UnloadData();
-	SDL_GL_DeleteContext(context);
-	SDL_DestroyWindow(mWindow);
-	SDL_DestroyRenderer(mRenderer);
 	IMG_Quit();
-
+	renderer->Shutdown();
 	//Checking and deleting all the actors
 	while (!mActors.empty())
 	{
@@ -201,32 +170,12 @@ void Game::ProcessInput()
 	}
 	mUpdatingActors = false;
 
-	mShip->ProcessKeyboard(state);
+	//mShip->ProcessKeyboard(state);
 }
 
 void Game::GenerateOutput()
 {
-	//Set the clear color
-	glClearColor(0.86f, 0.86f, 0.86f, 1.0f);
-
-	//Clear the buffer
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	spriteShader->SetActive();
-	spriteVerts->SetActive();
-
-	glEnable(GL_BLEND);
-	glBlendFunc(
-		GL_SRC_ALPHA,
-		GL_ONE_MINUS_SRC_ALPHA
-	);
-
-	for (auto sprite : mSprites)
-	{
-		sprite->Draw(spriteShader);
-	}
-	//Swap the buffers
-	SDL_GL_SwapWindow(mWindow);
+	renderer->Draw();
 }
 
 void Game::UpdateGame()
@@ -318,87 +267,4 @@ void Game::RemoveActor(Actor* actor)
 	{
 		mActors.erase(it);
 	}
-}
-
-
-Texture* Game::GetTexture(std::string file)
-{
-	auto it = textures.find(file);
-	Texture* tex = nullptr;
-
-	if (it != textures.end())
-	{
-		tex = it->second;
-	}
-
-	else
-	{
-		tex = new Texture();
-		if (tex->Load(file))
-		{
-			textures.emplace(file, tex);
-		}
-
-		else
-		{
-			delete tex;
-			tex = nullptr;
-		}
-	}
-
-	return tex;
-}
-
-
-void Game::AddSprite(SpriteComponent* sprite)
-{
-	int myDrawOrder = sprite->GetDrawOrder();
-	auto iter = mSprites.begin();
-	for (; iter != mSprites.end(); iter++)
-	{
-		if (myDrawOrder < (*iter)->GetDrawOrder())
-		{
-			break;
-		}
-	}
-
-	mSprites.insert(iter, sprite);
-}
-
-void Game::RemoveSprite(SpriteComponent* sprite)
-{
-	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
-	if (iter != mSprites.end())
-	{
-		mSprites.erase(iter);
-	}
-}
-
-void Game::InitSpriteVerts()
-{
-	float vertices[] = {
-	-0.5f,  0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, // top left
-	 0.5f,  0.5f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, // top right
-	 0.5f, -0.5f, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, // bottom right
-	-0.5f, -0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f  // bottom left
-	};
-
-	unsigned int indices[] = {
-		0, 1, 2,
-		2, 3, 0
-	};
-	spriteVerts = new VertexArray(vertices, 4, indices, 6);
-}
-
-bool Game::LoadShaders()
-{
-	spriteShader = new Shader();
-	if (!spriteShader->Load("Sprite.vert", "Sprite.frag"))
-	{
-		return false;
-	}
-	spriteShader->SetActive();
-	Matrix4 viewProjection = Matrix4::CreateSimpleViewProj(1024, 769);
-	spriteShader->SetMatrixUniform("uViewProj", viewProjection);
-	return true;
 }

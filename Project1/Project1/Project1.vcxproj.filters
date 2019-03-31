@@ -75,6 +75,12 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MeshComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -137,6 +143,12 @@
     <ClInclude Include="Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MeshComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.vert" />
@@ -144,5 +156,9 @@
     <None Include="Transform.vert" />
     <None Include="Sprite.vert" />
     <None Include="Sprite.frag" />
+    <None Include="BasicMesh.vert" />
+    <None Include="BasicMesh.frag" />
+    <None Include="Phong.vert" />
+    <None Include="Phong.frag" />
   </ItemGroup>
 </Project>

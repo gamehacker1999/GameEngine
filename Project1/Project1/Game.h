@@ -8,6 +8,7 @@
 #include"VertexArray.h"
 #include "Shader.h"
 #include"Texture.h"
+#include"Renderer.h"
 class Game
 {
 public:
@@ -23,14 +24,7 @@ public:
 	void AddActor(class Actor* actor);
 	void RemoveActor(class  Actor* actor);
 
-	void AddSprite(class SpriteComponent* sprite);
-	void RemoveSprite(class SpriteComponent* sprite);
-
-	Texture* GetTexture(std::string file);
-
-	//Texture* LoadTexture(std::string filename);
-
-	bool LoadShaders();
+	class Renderer* GetRenderer() const { return renderer; }
 
 	~Game();
 
@@ -39,15 +33,6 @@ private:
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();
-
-
-
-	//Window created by SDL
-	SDL_Window* mWindow;
-	//Renderer
-	SDL_Renderer* mRenderer;
-	//open gl context
-	SDL_GLContext context;
 	//game should continue to run
 	bool mIsRunning;
 
@@ -61,26 +46,18 @@ private:
 	std::vector < class  Actor* > mPendingActors;
 	bool mUpdatingActors;
 
-	//Texture fields 
-	std::map<std::string,Texture*> textures;
-
 	//Function to load all data
 	void LoadData();
 	void UnloadData();
 
 	//Initialize sprite verts
-	VertexArray *spriteVerts;
 	float vertexBuffer[4];
 	unsigned int indexBuffer[6];
-	void InitSpriteVerts();
-
 	//Fields and functions for sprites
-	std::vector <class SpriteComponent*> mSprites;
-
 	//Ship
 	class Ship* mShip;
-	Shader* spriteShader;
-
+	//Renderer
+	class Renderer* renderer;
 	
 };
 

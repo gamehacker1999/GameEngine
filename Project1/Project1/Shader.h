@@ -14,6 +14,8 @@ public:
 	void SetActive();
 	//Add matrix transforms to the shader
 	void SetMatrixUniform(const char* name, const Matrix4& matrix);
+	void SetVectorUniform(const char* name, const Vector3& vector3);
+	void SetFloatUniform(const char* name, const float& floatNum);
 
 private:
 	//tries to compile the specific shader

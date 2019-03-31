@@ -1,4 +1,5 @@
 #include"Game.h"
+#include"Renderer.h"
 #include "Mesh.h"
 #include<sstream>
 #include<fstream>
@@ -15,7 +16,7 @@ Mesh::~Mesh()
 {
 }
 
-bool Mesh::Load(std::string& filename, Game* game)
+bool Mesh::Load(std::string& filename, Renderer* renderer)
 {
 	std::ifstream file(filename);
 	if (!file.is_open())
@@ -65,19 +66,21 @@ bool Mesh::Load(std::string& filename, Game* game)
 		return false;
 	}
 
+	specularPower = doc["specularPower"].GetFloat();
+
 	//if the textures were loaded
 	for (rapidjson::SizeType i = 0; i < texturesJson.Size(); i++)
 	{
 		std::string texName = texturesJson[i].GetString();
 		//get the texture from the game
-		Texture* t = game->GetTexture(texName);
+		Texture* t = renderer->GetTexture(texName);
 		if (t == nullptr)
 		{
 			//Now try loading the texture again
-			t = game->GetTexture(texName);
+			t = renderer->GetTexture(texName);
 			if (t == nullptr)
 			{
-				t = game->GetTexture("Assets/Ship01.png");
+				t = renderer->GetTexture(texName);
 			}
 		}
 		this->textures.emplace_back(t);
@@ -157,4 +160,23 @@ bool Mesh::Load(std::string& filename, Game* game)
 
 	return true;
 
+}
+
+void Mesh::Unload()
+{
+	delete vertexArray;
+	vertexArray = nullptr;
+}
+
+Texture * Mesh::GetTexture(int index)
+{
+	if (index < textures.size())
+	{
+		return textures[index];
+	}
+
+	else
+	{
+		return nullptr;
+	}
 }

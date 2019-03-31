@@ -14,10 +14,10 @@ Ship::Ship(Game* game):Actor(game)
 	mRightSpeed = 0;
 	AnimSpriteComponent* asc = new AnimSpriteComponent(this);
 	std::vector<Texture*> anims = {
-		GetGame()->GetTexture("Assets/Ship01.png"),
-		GetGame()->GetTexture("Assets/Ship02.png"),
-		GetGame()->GetTexture("Assets/Ship03.png"),
-		GetGame()->GetTexture("Assets/Ship04.png"),
+		GetGame()->GetRenderer()->GetTexture("Assets/Ship01.png"),
+		GetGame()->GetRenderer()->GetTexture("Assets/Ship02.png"),
+		GetGame()->GetRenderer()->GetTexture("Assets/Ship03.png"),
+		GetGame()->GetRenderer()->GetTexture("Assets/Ship04.png"),
 	};
 	asc->SetAnimTextures(anims);
 

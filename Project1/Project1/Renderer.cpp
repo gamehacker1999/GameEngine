@@ -1,5 +1,5 @@
 #include "Renderer.h"
-
+#include"DirectionalLight.h"
 
 
 Renderer::Renderer(class Game* game)
@@ -29,12 +29,22 @@ bool Renderer::Initialize()
 	//Enable double buffering
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+	//enable depth buffer
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
 	//Force opengl to use hardware acceleration
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
 
 	//creating sdl window
 	window = SDL_CreateWindow("Game Program", 100, 100, 1024, 768, SDL_WINDOW_OPENGL);
+
+	if (!window)
+	{
+		SDL_Log("Window not created: &s", SDL_GetError());
+		return false;
+	}
+
 	context = SDL_GL_CreateContext(window);
 
 	glewExperimental = GLU_TRUE;
@@ -45,12 +55,6 @@ bool Renderer::Initialize()
 	}
 	glGetError();
 
-	if (!window)
-	{
-		SDL_Log("Window not created: &s", SDL_GetError());
-		return false;
-	}
-
 	if (!LoadShaders())
 	{
 		SDL_Log("Shaders could not be loaded");
@@ -58,6 +62,7 @@ bool Renderer::Initialize()
 	}
 
 	InitSpriteVerts();
+	return true;
 }
 
 void Renderer::Shutdown()
@@ -68,7 +73,6 @@ void Renderer::Shutdown()
 	delete spriteShader;
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(window);
-	//SDL_DestroyRenderer(mRenderer);
 }
 
 void Renderer::UnloadData()
@@ -83,6 +87,43 @@ void Renderer::UnloadData()
 
 void Renderer::Draw()
 {
+	//Set the clear color
+	glClearColor(0.f, 0.f, 0.f, 1.0f);
+
+	//Clear the buffer
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+	//drawing the meshes
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+	meshShader->SetActive();
+	meshShader->SetMatrixUniform("uViewProj", view*projection);
+
+	SetLightUniforms(meshShader);
+	for (auto mesh : meshComponents)
+	{
+		mesh->Draw(meshShader);
+	}
+
+	//drawing the sprites
+	spriteShader->SetActive();
+	spriteVerts->SetActive();
+
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(
+		GL_SRC_ALPHA,
+		GL_ONE_MINUS_SRC_ALPHA
+	);
+
+	for (auto sprite : sprites)
+	{
+		sprite->Draw(spriteShader);
+	}
+
+
+	//Swap the buffers
+	SDL_GL_SwapWindow(window);
 }
 
 void Renderer::AddSprite(SpriteComponent* sprite)
@@ -105,21 +146,142 @@ void Renderer::RemoveSprite(SpriteComponent* sprite)
 	sprites.erase(std::remove(sprites.begin(), sprites.end(), sprite), sprites.end());
 }
 
-Texture * Renderer::GetTexture(std::string & filename)
+Texture * Renderer::GetTexture(const std::string& file)
 {
-	return nullptr;
+	auto it = textures.find(file);
+	Texture* tex = nullptr;
+
+	if (it != textures.end())
+	{
+		tex = it->second;
+	}
+
+	else
+	{
+		tex = new Texture();
+		if (tex->Load(file))
+		{
+			textures.emplace(file, tex);
+		}
+
+		else
+		{
+			delete tex;
+			tex = nullptr;
+		}
+	}
+
+	return tex;
 }
 
-Mesh * Renderer::GetMesh(std::string & filename)
+Mesh * Renderer::GetMesh(const std::string & filename)
 {
-	return nullptr;
+	auto it = meshes.find(filename);
+	Mesh* mesh = nullptr;
+
+	if (it != meshes.end())
+	{
+		mesh = it->second;
+	}
+
+	else
+	{
+		mesh = new Mesh();
+		if (mesh->Load((std::string&)filename,this))
+		{
+			meshes.emplace(filename, mesh);
+		}
+
+		else
+		{
+			delete mesh;
+			mesh = nullptr;
+		}
+	}
+
+	return mesh;
 }
 
 bool Renderer::LoadShaders()
 {
-	return false;
+	//Initializing sprite shader
+	spriteShader = new Shader();
+	if (!spriteShader->Load("Sprite.vert", "Sprite.frag"))
+	{
+		return false;
+	}
+	spriteShader->SetActive();
+	Matrix4 viewProjection = Matrix4::CreateSimpleViewProj(1024, 768);
+	spriteShader->SetMatrixUniform("uViewProj", viewProjection);
+
+	//Initializing mesh shader
+	meshShader = new Shader();
+	if (!meshShader->Load("Phong.vert", "Phong.frag"))
+	{
+		return false;
+	}
+
+	meshShader->SetActive();
+
+	//Creating a view matrix
+	view = Matrix4::CreateLookAt(
+		Vector3::Zero, //eye
+		Vector3::UnitX, //Target
+		Vector3::UnitZ //Up
+	);
+
+	//creating projection matrix
+	projection = Matrix4::CreatePerspectiveFOV(
+		Math::ToRadians(70), //Field of view
+		1024, //height
+		768, //width
+		25, //near plane
+		10000// far plane
+	);
+
+	meshShader->SetMatrixUniform("uViewProj", view*projection);
+
+	return true;
 }
 
 void Renderer::InitSpriteVerts()
 {
+	float vertices[] = {
+	-0.5f,  0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, // top left
+	 0.5f,  0.5f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, // top right
+	0.5f, -0.5f, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, // bottom right
+	-0.5f, -0.5f, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f  // bottom left
+	};
+
+	unsigned int indices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+	spriteVerts = new VertexArray(vertices, 4, indices, 6);
+}
+
+void Renderer::SetLightUniforms(Shader * shader)
+{
+	//camera position is the inverse of the view matrix
+	Matrix4 inView = view;
+	inView.Invert();
+	//getting the world space position of camera
+	shader->SetVectorUniform("uCameraPos", inView.GetTranslation());
+	//setting the ambient light
+	shader->SetVectorUniform("ambientLight", ambientLight);
+	//setting the directional light
+	shader->SetVectorUniform("directionalLight.direction",directionLight.direction);
+	shader->SetVectorUniform("directionalLight.diffuseColor",directionLight.diffuseColor);
+	shader->SetVectorUniform("directionalLight.specularity",directionLight.speculariy);
+
+}
+
+void Renderer::AddMesh(MeshComponent* mesh)
+{
+	meshComponents.emplace_back(mesh);
+}
+
+void Renderer::RemoveMesh(MeshComponent* mesh)
+{
+	meshComponents.erase(std::remove(meshComponents.begin(), meshComponents.end(), mesh), meshComponents.end());
 }

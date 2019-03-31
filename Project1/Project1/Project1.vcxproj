@@ -133,12 +133,14 @@
     <ClCompile Include="BGSpriteComponent.cpp" />
     <ClCompile Include="CircleComponent.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="functions.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="InputComponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshComponent.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -156,11 +158,13 @@
     <ClInclude Include="BGSpriteComponent.h" />
     <ClInclude Include="CircleComponent.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="functions.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshComponent.h" />
     <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
@@ -174,6 +178,10 @@
   <ItemGroup>
     <None Include="Basic.frag" />
     <None Include="Basic.vert" />
+    <None Include="BasicMesh.frag" />
+    <None Include="BasicMesh.vert" />
+    <None Include="Phong.frag" />
+    <None Include="Phong.vert" />
     <None Include="Sprite.frag" />
     <None Include="Sprite.vert" />
     <None Include="Transform.vert" />

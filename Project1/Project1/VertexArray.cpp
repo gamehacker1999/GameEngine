@@ -4,6 +4,10 @@
 
 VertexArray::VertexArray(const float * verts, unsigned int numVerts, const unsigned int * indices, unsigned int numIndices)
 {
+
+	this->numVerts = numVerts;
+	this->numIndices = numIndices;
+
 	//Creating vertex array object and storing its id in the vertex array member
 	glGenVertexArrays(1, &vertexArray);
 	glBindVertexArray(vertexArray);

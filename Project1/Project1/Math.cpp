@@ -1,3 +1,6 @@
+//Copyright(c) 2017, Sanjay Madhav
+//All rights reserved.
+
 #include "Math.h"
 
 const Vector3 Vector3::Zero(0.0f, 0.0f, 0.f);
