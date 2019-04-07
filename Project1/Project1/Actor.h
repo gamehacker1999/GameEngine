@@ -36,6 +36,7 @@ public:
 	Quaternion GetRotation() const { return mRotation; }
 	Game* GetGame() const { return mGame; }
 	Vector3 GetForward() const { return Vector3::Transform(Vector3::UnitX, mRotation); }
+	Vector3 GetRight() const { return Vector3::Transform(Vector3::UnitY,mRotation); }
 	Matrix4& GetWorldTransform() { return worldTransform; }
 
 	void SetPosition(Vector3 pos) { position = pos; }

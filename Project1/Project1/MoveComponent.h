@@ -11,11 +11,13 @@ public:
 	float GetForwardSpeed() const { return forwardSpeed; }
 	void SetAngularSpeed(float speed) { this->angularSpeed = speed; }
 	void SetForwardSpeed(float speed) { this->forwardSpeed = speed; }
+	void SetStrafeSpeed(float speed) { this->strafeSpeed = speed; }
 
 	virtual ~MoveComponent();
 
 private:
 	float angularSpeed;
 	float forwardSpeed;
+	float strafeSpeed;
 };
 

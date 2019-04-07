@@ -38,6 +38,8 @@ public:
 	void SetAmbientLight(const Vector3& ambient) {ambientLight = ambient; }
 	DirectionalLight& GetDirectionalLight() { return directionLight; }
 
+	void SetViewMatrix(Matrix4 view) { this->view = view; }
+
 private:
 	bool LoadShaders();
 	void InitSpriteVerts();

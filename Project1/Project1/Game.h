@@ -9,6 +9,8 @@
 #include "Shader.h"
 #include"Texture.h"
 #include"Renderer.h"
+#include"CameraActor.h"
+#include"FPSActor.h"
 class Game
 {
 public:
@@ -56,6 +58,8 @@ private:
 	//Fields and functions for sprites
 	//Ship
 	class Ship* mShip;
+	class CameraActor* cameraActor;
+	class FPSActor* fpsActor;
 	//Renderer
 	class Renderer* renderer;
 	

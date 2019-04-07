@@ -9,7 +9,7 @@ Actor::Actor(class Game* game)
 	mGame = game;
 	mState = State::EActive;
 	position = Vector3(-512,384,0);
-	mRotation = Quaternion(0,0,0,0);
+	mRotation = Quaternion::Identity;
 	mScale = 1.0f;
 	recomputeWorldTransform = true; //atleast one transform will happen
 	mGame->AddActor(this);
