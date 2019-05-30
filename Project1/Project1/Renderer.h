@@ -1,16 +1,12 @@
 #pragma once
-#include<SDL.h>
-#include<string>
-#include"Texture.h"
-#include"Mesh.h"
-#include<map>
-#include"SpriteComponent.h"
-#include"Game.h"
-#include"Shader.h"
-#include"GL/glew.h"
-#include"VertexArray.h"
-#include"MeshComponent.h"
+
+#include <string>
+#include <vector>
+#include <map>
+#include <SDL.h>
+#include "Math.h"
 #include"DirectionalLight.h"
+#include"SpriteComponent.h"
 class Renderer
 {
 public:
@@ -49,6 +45,7 @@ private:
 
 	std::map<std::string, class Mesh*> meshes;
 	std::vector<class MeshComponent*> meshComponents;
+	std::vector<class SkeletalMeshComponent*> skeletalMeshComponent;
 
 	class Game* game;
 
@@ -56,6 +53,8 @@ private:
 	class Shader* spriteShader;
 	//Mesh shader
 	class Shader* meshShader;
+	//skinned mesh shader
+	class Shader* skinnedMeshShader;
 
 	//Matrices for view and projection
 	Matrix4 view;

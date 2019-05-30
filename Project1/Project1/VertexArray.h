@@ -2,9 +2,18 @@
 //Vertex array object class to score vertex buffer and index buffer
 class VertexArray
 {
+
 public:
-	VertexArray(const float* verts, unsigned int numVerts, const unsigned int* indices,
-	unsigned int numIndices);
+
+	//enum to specify the kind of vertex layout of the object
+	enum Layout
+	{
+		PosNormTex, //position, normal, texture
+		PosNormSkinTex, //add bones and weight to above
+	};
+
+	VertexArray(const void* verts, unsigned int numVerts, const unsigned int* indices,
+		unsigned int numIndices, Layout layout);
 	~VertexArray();
 
 	//Activate the vertx array so we can draw it
@@ -12,6 +21,8 @@ public:
 
 	unsigned int GetNumIndices() const { return numIndices; }
 	unsigned int GetNumVertices() const { return numVerts; }
+
+
 
 private:
 	//How many verts in vertex buffer

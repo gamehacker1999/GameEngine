@@ -11,6 +11,10 @@
 #include"Renderer.h"
 #include"CameraActor.h"
 #include"FPSActor.h"
+#include"Car.h"
+#include"FollowActor.h"
+#include"Skeleton.h"
+#include"Animation.h"
 class Game
 {
 public:
@@ -27,6 +31,10 @@ public:
 	void RemoveActor(class  Actor* actor);
 
 	class Renderer* GetRenderer() const { return renderer; }
+
+	class Skeleton* GetSkeleton(const std::string& fileName);
+
+	class Animation* GetAnimation(const std::string& fileName);
 
 	~Game();
 
@@ -48,6 +56,12 @@ private:
 	std::vector < class  Actor* > mPendingActors;
 	bool mUpdatingActors;
 
+	//map of skeletons
+	std::map<std::string, class Skeleton*> mSkeletons;
+
+	//map of animations
+	std::map<std::string, class Animation*> mAnimations;
+
 	//Function to load all data
 	void LoadData();
 	void UnloadData();
@@ -60,6 +74,9 @@ private:
 	class Ship* mShip;
 	class CameraActor* cameraActor;
 	class FPSActor* fpsActor;
+	class Car* car;
+	class FollowActor* followActor;
+
 	//Renderer
 	class Renderer* renderer;
 	

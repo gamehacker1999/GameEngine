@@ -20,6 +20,59 @@ Game::Game()
 }
 
 
+Skeleton * Game::GetSkeleton(const std::string & fileName)
+{
+	auto iter = mSkeletons.find(fileName);
+
+	if (iter != mSkeletons.end())
+	{
+		return iter->second;
+	}
+
+	else
+	{
+		Skeleton* sk = new Skeleton();
+		if (sk->Load(fileName))
+		{
+			mSkeletons.emplace(fileName, sk);
+		}
+
+		else
+		{
+			delete sk;
+			sk = nullptr;
+		}
+		return sk;
+	}
+}
+
+Animation * Game::GetAnimation(const std::string & fileName)
+{
+	auto iter = mAnimations.find(fileName);
+
+	if (iter != mAnimations.end())
+	{
+		return iter->second;
+	}
+
+	else
+	{
+		Animation* anim = new Animation();
+		if (anim->Load(fileName))
+		{
+			mAnimations.emplace(fileName, anim);
+		}
+
+		else
+		{
+			delete anim;
+			anim = nullptr;
+		}
+
+		return anim;
+	}
+}
+
 Game::~Game()
 {
 }
@@ -94,7 +147,7 @@ void Game::LoadData()
 	mc = new MeshComponent(a);
 	mc->SetMesh(renderer->GetMesh("Assets/Sphere.gpmesh"));
 
-	// Setup floor
+	 //Setup floor
 	const float start = -1250.0f;
 	const float size = 250.0f;
 	for (int i = 0; i < 10; i++)
@@ -132,6 +185,25 @@ void Game::LoadData()
 		a->SetRotation(q);
 	}*/
 
+	//creating actors
+
+	/*Actor* a = nullptr;
+	Quaternion q;
+
+	// Setup floor
+	const float start = -1250.0f;
+	const float size = 250.0f;
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			a = new PlaneActor(this);
+			a->SetPosition(Vector3(start + i * size, start + j * size, -100.0f));
+		}
+	}*/
+
+	followActor = new FollowActor(this);
+
 	// Setup lights
 	renderer->SetAmbientLight(Vector3(0.2f, 0.2f, 0.2f));
 	DirectionalLight& dir = renderer->GetDirectionalLight();
@@ -141,7 +213,8 @@ void Game::LoadData()
 
 	//FPS Camera actor
 	//cameraActor = new CameraActor(this);
-	fpsActor = new FPSActor(this);
+	//fpsActor = new FPSActor(this);
+	//car = new Car(this);
 }
 
 void Game::UnloadData()

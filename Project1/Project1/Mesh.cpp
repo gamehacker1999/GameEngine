@@ -6,6 +6,16 @@
 #include<rapidjson/document.h>
 #include<SDL.h>
 #include"Math.h"
+#include"VertexArray.h"
+#include"MeshComponent.h"
+
+
+union Vertex
+{
+	float f;
+	uint8_t b[4];
+};
+
 
 Mesh::Mesh()
 {
@@ -16,148 +26,173 @@ Mesh::~Mesh()
 {
 }
 
-bool Mesh::Load(std::string& filename, Renderer* renderer)
+bool Mesh::Load(std::string& fileName, Renderer* renderer)
 {
-	std::ifstream file(filename);
+	std::ifstream file(fileName);
 	if (!file.is_open())
 	{
-		SDL_Log("Mesh could not be loaded");
+		SDL_Log("File not found: Mesh %s", fileName.c_str());
 		return false;
 	}
 
-	std::stringstream stream;
-	stream << file.rdbuf();
-	//Reading the file in string format
-	std::string contents = stream.str();
-
-	//Converting the string to a json string
-	const char* charContents = contents.c_str();
-	rapidjson::StringStream jsonStr(charContents);
-
-	//Parsing the string to a json file
+	std::stringstream fileStream;
+	fileStream << file.rdbuf();
+	std::string contents = fileStream.str();
+	rapidjson::StringStream jsonStr(contents.c_str());
 	rapidjson::Document doc;
 	doc.ParseStream(jsonStr);
 
 	if (!doc.IsObject())
 	{
-		SDL_Log("The file was no a json object");
+		SDL_Log("Mesh %s is not valid json", fileName.c_str());
 		return false;
 	}
 
-	int version = doc["version"].GetInt();
+	int ver = doc["version"].GetInt();
 
-	if (version != 1)
+	// Check the version
+	if (ver != 1)
 	{
-		SDL_Log("Version is not one" , filename.c_str());
+		SDL_Log("Mesh %s not version 1", fileName.c_str());
 		return false;
 	}
 
 	shaderName = doc["shader"].GetString();
 
-	//Size of each vertex in vertex array
-	int vertSize = 8;
+	// Set the vertex layout/size based on the format in the file
+	VertexArray::Layout layout = VertexArray::PosNormTex;
+	size_t vertSize = 8;
 
-	//Loading the textures array in the mesh
-	const rapidjson::Value& texturesJson = doc["textures"];
-
-	if (!texturesJson.IsArray() || texturesJson.Size() < 1)
+	std::string vertexFormat = doc["vertexformat"].GetString();
+	if (vertexFormat == "PosNormSkinTex")
 	{
-		SDL_Log("There were no textures in the mesh");
+		layout = VertexArray::PosNormSkinTex;
+		// This is the number of "Vertex" unions, which is 8 + 2 (for skinning)s
+		vertSize = 10;
+	}
+
+	// Load textures
+	const rapidjson::Value& textures = doc["textures"];
+	if (!textures.IsArray() || textures.Size() < 1)
+	{
+		SDL_Log("Mesh %s has no textures, there should be at least one", fileName.c_str());
 		return false;
 	}
 
-	specularPower = doc["specularPower"].GetFloat();
+	specularPower = static_cast<float>(doc["specularPower"].GetDouble());
 
-	//if the textures were loaded
-	for (rapidjson::SizeType i = 0; i < texturesJson.Size(); i++)
+	for (rapidjson::SizeType i = 0; i < textures.Size(); i++)
 	{
-		std::string texName = texturesJson[i].GetString();
-		//get the texture from the game
+		// Is this texture already loaded?
+		std::string texName = textures[i].GetString();
 		Texture* t = renderer->GetTexture(texName);
 		if (t == nullptr)
 		{
-			//Now try loading the texture again
+			// Try loading the texture
 			t = renderer->GetTexture(texName);
 			if (t == nullptr)
 			{
-				t = renderer->GetTexture(texName);
+				// If it's still null, just use the default texture
+				t = renderer->GetTexture("Assets/Default.png");
 			}
 		}
 		this->textures.emplace_back(t);
 	}
 
-	//Get the vertices from the json
+	// Load in the vertices
 	const rapidjson::Value& vertsJson = doc["vertices"];
-
 	if (!vertsJson.IsArray() || vertsJson.Size() < 1)
 	{
-		SDL_Log("Mesh has no vertices", filename);
+		SDL_Log("Mesh %s has no vertices", fileName.c_str());
 		return false;
 	}
 
-	std::vector<float> vertices;
-
-	radius = 0.0;
-
-    //each vertex is an array itself
+	std::vector<Vertex> vertices;
+	vertices.reserve(vertsJson.Size() * vertSize);
+	radius = 0.0f;
 	for (rapidjson::SizeType i = 0; i < vertsJson.Size(); i++)
 	{
-		//get the vertex array of each vertex
-		const rapidjson::Value& verts = vertsJson[i];
-
-		if (!verts.IsArray() || verts.Size() != 8)
+		// For now, just assume we have 8 elements
+		const rapidjson::Value& vert = vertsJson[i];
+		if (!vert.IsArray())
 		{
-			SDL_Log("Unexpected vertex format for %s", filename);
+			SDL_Log("Unexpected vertex format for %s", fileName.c_str());
 			return false;
 		}
 
-		//the first three values of the vertex array are the position of the vertex
-		Vector3 pos(verts[0].GetDouble(), verts[1].GetDouble(), verts[2].GetDouble());
+		Vector3 pos(vert[0].GetDouble(), vert[1].GetDouble(), vert[2].GetDouble());
+		radius = Math::Max(radius, pos.LengthSq());
+		//mBox.UpdateMinMax(pos);
 
-		//Calculating the radius of the maximum bounding square
-		//Comparing it with each vertex to find max radius
-		radius = std::max(radius,pos.Length());
-
-		//add the floats to the vertices
-		for (rapidjson::SizeType i = 0; i < verts.Size(); i++)
+		if (layout == VertexArray::PosNormTex)
 		{
-			vertices.emplace_back(static_cast<float>(verts[i].GetDouble()));
+			Vertex v;
+			// Add the floats
+			for (rapidjson::SizeType j = 0; j < vert.Size(); j++)
+			{
+				v.f = static_cast<float>(vert[j].GetDouble());
+				vertices.emplace_back(v);
+			}
 		}
+		else
+		{
+			Vertex v;
+			// Add pos/normal
+			for (rapidjson::SizeType j = 0; j < 6; j++)
+			{
+				v.f = static_cast<float>(vert[j].GetDouble());
+				vertices.emplace_back(v);
+			}
 
+			// Add skin information
+			for (rapidjson::SizeType j = 6; j < 14; j += 4)
+			{
+				v.b[0] = vert[j].GetUint();
+				v.b[1] = vert[j + 1].GetUint();
+				v.b[2] = vert[j + 2].GetUint();
+				v.b[3] = vert[j + 3].GetUint();
+				vertices.emplace_back(v);
+			}
+
+			// Add tex coords
+			for (rapidjson::SizeType j = 14; j < vert.Size(); j++)
+			{
+				v.f = vert[j].GetDouble();
+				vertices.emplace_back(v);
+			}
+		}
 	}
 
-	//load the indices of the mesh
-	const rapidjson::Value& indexJson = doc["indices"];
+	// We were computing length squared earlier
+	radius = Math::Sqrt(radius);
 
-	if (!indexJson.IsArray() || indexJson.Size() < 1)
+	// Load in the indices
+	const rapidjson::Value& indJson = doc["indices"];
+	if (!indJson.IsArray() || indJson.Size() < 1)
 	{
-		SDL_Log("The mesh has no indices", filename);
+		SDL_Log("Mesh %s has no indices", fileName.c_str());
 		return false;
 	}
 
 	std::vector<unsigned int> indices;
-
-	for (rapidjson::SizeType i = 0; i < indexJson.Size(); i++)
+	indices.reserve(indJson.Size() * 3);
+	for (rapidjson::SizeType i = 0; i < indJson.Size(); i++)
 	{
-		const rapidjson::Value& inds = indexJson[i];
-		if (!inds.IsArray() || inds.Size() != 3)
+		const rapidjson::Value& ind = indJson[i];
+		if (!ind.IsArray() || ind.Size() != 3)
 		{
-			SDL_Log("Invalid index format", filename);
+			SDL_Log("Invalid indices for %s", fileName.c_str());
 			return false;
 		}
 
-		indices.emplace_back(inds[0].GetUint());
-		indices.emplace_back(inds[1].GetUint());
-		indices.emplace_back(inds[2].GetUint());
-
+		indices.emplace_back(ind[0].GetUint());
+		indices.emplace_back(ind[1].GetUint());
+		indices.emplace_back(ind[2].GetUint());
 	}
 
-	//now create vertex array object using these values
-	vertexArray = new VertexArray(vertices.data(),
-		static_cast<float>(vertices.size()) / vertSize,
-		indices.data(),
-		static_cast<unsigned int>(indices.size()));	
-
+	// Now create a vertex array
+	vertexArray = new VertexArray(vertices.data(),static_cast<unsigned>(vertices.size())/vertSize,
+		indices.data(),indices.size(),layout);
 	return true;
 
 }

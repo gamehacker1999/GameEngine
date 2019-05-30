@@ -9,8 +9,8 @@ class MeshComponent :
 	public Component
 {
 public:
-	MeshComponent(class Actor* owner);
-	~MeshComponent();
+	MeshComponent(class Actor* owner, bool isSkeleton = false);
+	virtual ~MeshComponent();
 
 	//draw this mesh component with shader
 	virtual void Draw(class Shader* shader);
@@ -19,7 +19,9 @@ public:
 	virtual void SetMesh(class Mesh* mesh);
 	void SetTextureIndex(int index) { meshIndex = index; }
 
-private:
+	bool isSkeletal;
+
+protected:
 	class Mesh* mesh;
 	int meshIndex;
 };

@@ -121,6 +121,14 @@ void Shader::Unload()
 	glDeleteShader(fragmentShader);
 }
 
+void Shader::SetMatrixUniforms(const char* name, const Matrix4* matrix, int size)
+{
+	GLuint loc = glGetUniformLocation(shaderProgram, name);
+
+	glUniformMatrix4fv(loc, size, GL_TRUE, matrix->GetAsFloatPtr());
+}
+
+
 void Shader::SetMatrixUniform(const char* name, const Matrix4& matrix)
 {
 	//find the unform by this name

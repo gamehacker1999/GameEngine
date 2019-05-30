@@ -1,9 +1,11 @@
 #include "MeshComponent.h"
 
-MeshComponent::MeshComponent(class Actor* owner):Component(owner)
+MeshComponent::MeshComponent(class Actor* owner,bool isSkeleton):Component(owner)
 {
+	isSkeletal = isSkeleton;
 	mOwner->GetGame()->GetRenderer()->AddMesh(this);
 	//meshIndex = 0;
+
 }
 
 

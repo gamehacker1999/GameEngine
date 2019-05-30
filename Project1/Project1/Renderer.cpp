@@ -1,5 +1,14 @@
 #include "Renderer.h"
-#include"DirectionalLight.h"
+#include "Texture.h"
+#include "Mesh.h"
+#include <algorithm>
+#include "Shader.h"
+#include "VertexArray.h"
+#include "SpriteComponent.h"
+#include "MeshComponent.h"
+#include "Game.h"
+#include <GL/glew.h>
+#include "SkeletalMeshComponent.h"
 
 
 Renderer::Renderer(class Game* game)
@@ -10,6 +19,11 @@ Renderer::Renderer(class Game* game)
 
 Renderer::~Renderer()
 {
+	/*delete meshShader;
+	delete spriteShader;
+	delete skinnedMeshShader;
+	delete spriteVerts;
+	*/
 }
 
 bool Renderer::Initialize()
@@ -105,9 +119,20 @@ void Renderer::Draw()
 		mesh->Draw(meshShader);
 	}
 
+	//drawing the skinned meshes
+	skinnedMeshShader->SetActive();
+	skinnedMeshShader->SetMatrixUniform("uViewProj", view*projection);
+	SetLightUniforms(skinnedMeshShader);
+
+	for (auto mesh : skeletalMeshComponent)
+	{
+		mesh->Draw(skinnedMeshShader);
+	}
+	
+
 	//drawing the sprites
 	spriteShader->SetActive();
-	spriteVerts->SetActive();
+	//spriteVerts->SetActive();
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -221,7 +246,15 @@ bool Renderer::LoadShaders()
 		return false;
 	}
 
+	skinnedMeshShader = new Shader();
+
+	if (!skinnedMeshShader->Load("Skinned.vert", "Phong.frag"))
+	{
+		return false;
+	}
+
 	meshShader->SetActive();
+	//skinnedMeshShader->SetActive();
 
 	//Creating a view matrix
 	view = Matrix4::CreateLookAt(
@@ -240,6 +273,7 @@ bool Renderer::LoadShaders()
 	);
 
 	meshShader->SetMatrixUniform("uViewProj", view*projection);
+	skinnedMeshShader->SetMatrixUniform("uViewProj", view*projection);
 
 	return true;
 }
@@ -255,9 +289,8 @@ void Renderer::InitSpriteVerts()
 
 	unsigned int indices[] = {
 		0, 1, 2,
-		2, 3, 0
 	};
-	spriteVerts = new VertexArray(vertices, 4, indices, 6);
+	spriteVerts = new VertexArray(vertices, 4, indices, 6,VertexArray::PosNormTex);
 }
 
 void Renderer::SetLightUniforms(Shader * shader)
@@ -278,10 +311,23 @@ void Renderer::SetLightUniforms(Shader * shader)
 
 void Renderer::AddMesh(MeshComponent* mesh)
 {
+	if (mesh->isSkeletal)
+	{
+		skeletalMeshComponent.emplace_back((class SkeletalMeshComponent*)mesh);
+		return;
+	}
 	meshComponents.emplace_back(mesh);
 }
 
 void Renderer::RemoveMesh(MeshComponent* mesh)
 {
+	if (mesh->isSkeletal)
+	{
+		SkeletalMeshComponent* sk = static_cast<SkeletalMeshComponent*>(mesh);
+		auto iter = std::find(skeletalMeshComponent.begin(), skeletalMeshComponent.end(), sk);
+		skeletalMeshComponent.erase(iter);
+		return;
+	}
+
 	meshComponents.erase(std::remove(meshComponents.begin(), meshComponents.end(), mesh), meshComponents.end());
 }
