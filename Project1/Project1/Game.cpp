@@ -202,7 +202,17 @@ void Game::LoadData()
 		}
 	}*/
 
-	followActor = new FollowActor(this);
+	//followActor = new FollowActor(this);
+	//followActor->SetScale(20);
+
+	a = new Actor(this);
+	//mc = new MeshComponent(a);
+	//mc->SetMesh(this->GetRenderer()->GetMesh("Assets / stall.obj"));
+	a->SetMesh(this->GetRenderer()->GetMesh("Assets/shark.obj","Assets/Cube.png"));
+	a->SetPosition(Vector3(0,25,-50));
+	a->SetScale(20);
+	a->SetRotation(Quaternion(a->GetForward(), Math::Pi / 2));
+	//a->SetRotation(Quaternion(a->GetUp(), Math::Pi / 2));
 
 	// Setup lights
 	renderer->SetAmbientLight(Vector3(0.2f, 0.2f, 0.2f));
@@ -213,7 +223,7 @@ void Game::LoadData()
 
 	//FPS Camera actor
 	//cameraActor = new CameraActor(this);
-	//fpsActor = new FPSActor(this);
+	fpsActor = new FPSActor(this);
 	//car = new Car(this);
 }
 

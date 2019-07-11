@@ -2,6 +2,7 @@
 #include "Actor.h"
 #include "Game.h"
 #include "Vector2.h"
+#include"MeshComponent.h"
 
 
 Actor::Actor(class Game* game)
@@ -52,6 +53,12 @@ void Actor::UpdateComponents(float deltaTime)
 	{
 		comp->Update(deltaTime);
 	}
+}
+
+void Actor::SetMesh(Mesh * mesh)
+{
+	meshComp = new MeshComponent(this); 
+	meshComp->SetMesh(mesh); 
 }
 
 void Actor::AddComponent(Component* component)

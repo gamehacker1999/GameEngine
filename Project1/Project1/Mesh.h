@@ -10,7 +10,8 @@ class Mesh
 public:
 	Mesh();
 	~Mesh();
-	bool Load(std::string& filename, class Renderer* renderer);
+	bool Load(std::string& filename, class Renderer* renderer,std::string texture = "default");
+
 	void Unload();
 	//Get vertex array associated with this mesh
 	VertexArray* GetVertexArray() const { return vertexArray; }
@@ -30,6 +31,11 @@ private:
 	std::string shaderName;
 	float radius;
 	float specularPower;
+
+	//functions to detemine which kind og model to load
+	bool LoadFBX(std::string& filename, class Renderer* renderer, std::string texture = "default");
+	bool LoadOBJ(std::string& filename, class Renderer* renderer, std::string texture = "default");
+	bool LoadGPMESH(std::string& filename, class Renderer* renderer, std::string texture = "default");
 	
 };
 

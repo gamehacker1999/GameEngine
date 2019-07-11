@@ -10,11 +10,14 @@ FollowActor::FollowActor(Game* game)
 	:Actor(game)
 	, mMoving(false)
 {
-	meshComp = new SkeletalMeshComponent(this);
+	/*meshComp = new SkeletalMeshComponent(this);
 	meshComp->SetMesh(game->GetRenderer()->GetMesh("Assets/CatWarrior.gpmesh"));
 	meshComp->SetSkeleton(game->GetSkeleton("Assets/CatWarrior.gpskel"));
 	meshComp->PlayAnimation(game->GetAnimation("Assets/CatActionIdle.gpanim"));
-	SetPosition(Vector3(0.0f, 0.0f, -100.0f));
+	SetPosition(Vector3(0.0f, 0.0f, -100.0f));*/
+
+	meshComp = new MeshComponent(this);
+	meshComp->SetMesh(game->GetRenderer()->GetMesh("Assets/stall.obj"));
 
 	moveComp = new MoveComponent(this);
 	cameraComp = new FollowCamera(this);
@@ -44,7 +47,7 @@ void FollowActor::ActorInput(const uint8_t* keys)
 	}
 
 	// Did we just start moving?
-	if (!mMoving && !Math::NearZero(forwardSpeed))
+	/*if (!mMoving && !Math::NearZero(forwardSpeed))
 	{
 		mMoving = true;
 		meshComp->PlayAnimation(GetGame()->GetAnimation("Assets/CatRunSprint.gpanim"), 1.25f);
@@ -54,7 +57,7 @@ void FollowActor::ActorInput(const uint8_t* keys)
 	{
 		mMoving = false;
 		meshComp->PlayAnimation(GetGame()->GetAnimation("Assets/CatActionIdle.gpanim"));
-	}
+	}*/
 	moveComp->SetForwardSpeed(forwardSpeed);
 	moveComp->SetAngularSpeed(angularSpeed);
 }

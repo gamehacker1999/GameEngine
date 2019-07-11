@@ -6,6 +6,11 @@
 #include<math.h>
 #include <algorithm>
 #include <vector>
+//#include"MeshComponent.h"
+//#include"Mesh.h"
+
+class MeshComponent;
+
 class Actor
 {
 public:
@@ -37,11 +42,13 @@ public:
 	Game* GetGame() const { return mGame; }
 	Vector3 GetForward() const { return Vector3::Transform(Vector3::UnitX, mRotation); }
 	Vector3 GetRight() const { return Vector3::Transform(Vector3::UnitY,mRotation); }
+	Vector3 GetUp() const { return Vector3::Transform(Vector3::UnitZ, mRotation); }
 	Matrix4& GetWorldTransform() { return worldTransform; }
 
 	void SetPosition(Vector3 pos) { position = pos; }
 	void SetScale(float scale) { mScale = scale; }
 	void SetRotation(Quaternion rot) { mRotation = rot; }
+	void SetMesh(class Mesh* mesh);
 
 	//Add remove components
 	void AddComponent(class Component* component);
@@ -73,6 +80,8 @@ private:
 	std::vector<class Component* > mComponents;
 
 	class Game* mGame;
+
+	MeshComponent* meshComp;
 
 };
 

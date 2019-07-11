@@ -71,6 +71,7 @@ void SkeletalMeshComponent::ComputeMatrixPallete()
 //function to play animation
 float SkeletalMeshComponent::PlayAnimation(Animation * anim, float playRate)
 {
+
 	animation = anim;
 
 	animTime = 0;

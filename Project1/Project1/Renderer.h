@@ -29,7 +29,7 @@ public:
 
 	class Texture* GetTexture(const std::string& filename);
 
-	class Mesh* GetMesh(const std::string& filename);
+	class Mesh* GetMesh(const std::string& filename,std::string texture="default");
 
 	void SetAmbientLight(const Vector3& ambient) {ambientLight = ambient; }
 	DirectionalLight& GetDirectionalLight() { return directionLight; }

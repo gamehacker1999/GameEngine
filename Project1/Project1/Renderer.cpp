@@ -199,7 +199,7 @@ Texture * Renderer::GetTexture(const std::string& file)
 	return tex;
 }
 
-Mesh * Renderer::GetMesh(const std::string & filename)
+Mesh * Renderer::GetMesh(const std::string & filename, std::string texture)
 {
 	auto it = meshes.find(filename);
 	Mesh* mesh = nullptr;
@@ -212,7 +212,7 @@ Mesh * Renderer::GetMesh(const std::string & filename)
 	else
 	{
 		mesh = new Mesh();
-		if (mesh->Load((std::string&)filename,this))
+		if (mesh->Load((std::string&)filename,this,texture))
 		{
 			meshes.emplace(filename, mesh);
 		}
