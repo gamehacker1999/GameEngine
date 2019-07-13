@@ -681,6 +681,27 @@ public:
 		return Matrix4(temp);
 	}
 
+	static Matrix4 CreateSkyBoxLookAt(const Vector3& eye, const Vector3& target, const Vector3& up)
+	{
+		Vector3 zaxis = Vector3::Normalize(target - eye);
+		Vector3 xaxis = Vector3::Normalize(Vector3::Cross(up, zaxis));
+		Vector3 yaxis = Vector3::Normalize(Vector3::Cross(zaxis, xaxis));
+		Vector3 trans;
+		trans.x = -Vector3::Dot(xaxis, eye);
+		trans.y = -Vector3::Dot(yaxis, eye);
+		trans.z = -Vector3::Dot(zaxis, eye);
+
+		float temp[4][4] =
+		{
+			{ xaxis.x, yaxis.x, zaxis.x, 0.0f },
+			{ xaxis.y, yaxis.y, zaxis.y, 0.0f },
+			{ xaxis.z, yaxis.z, zaxis.z, 0.0f },
+			{ 0.0f,		0.0f,	0.0f,	 1.0f }
+		};
+		return Matrix4(temp);
+
+	}
+
 	static Matrix4 CreateOrtho(float width, float height, float near, float far)
 	{
 		float temp[4][4] =

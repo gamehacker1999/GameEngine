@@ -167,6 +167,7 @@
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="SkeletalMeshComponent.cpp" />
     <ClCompile Include="Skeleton.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="SpriteComponent.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="Ship.h" />
     <ClInclude Include="SkeletalMeshComponent.h" />
     <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="SpriteComponent.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Texture.h" />
@@ -220,6 +222,8 @@
     <None Include="Phong.frag" />
     <None Include="Phong.vert" />
     <None Include="Skinned.vert" />
+    <None Include="Skybox.frag" />
+    <None Include="Skybox.vert" />
     <None Include="Sprite.frag" />
     <None Include="Sprite.vert" />
     <None Include="Transform.vert" />

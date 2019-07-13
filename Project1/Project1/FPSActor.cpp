@@ -46,6 +46,7 @@ void FPSActor::ActorInput(const uint8_t* keys)
 	int y;
 
 	//getting right/left movement and pitch
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 	Uint32 buttons = SDL_GetRelativeMouseState(&x, &y);
 	const int maxMouseSpeed = 500;
 	const int maxAngularSpeed = Math::Pi * 8;

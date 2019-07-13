@@ -123,6 +123,9 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -233,6 +236,9 @@
     <ClInclude Include="Animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Basic.vert" />
@@ -245,5 +251,7 @@
     <None Include="Phong.vert" />
     <None Include="Phong.frag" />
     <None Include="Skinned.vert" />
+    <None Include="Skybox.vert" />
+    <None Include="Skybox.frag" />
   </ItemGroup>
 </Project>

@@ -10,5 +10,6 @@ public:
 	virtual ~CameraComponent();
 protected:
 	void SetViewMatrix(const Matrix4& view);
+	void SetSkyBoxMatrix(const Matrix4& skyboxView);
 };
 

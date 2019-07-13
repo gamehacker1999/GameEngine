@@ -33,7 +33,9 @@ void FPSCamera::Update(float deltaTime)
 
 	//setting up view
 	Matrix4 view = Matrix4::CreateLookAt(pos, target, up);
+	Matrix4 skyboxView = Matrix4::CreateSkyBoxLookAt(pos, target, up);
 	SetViewMatrix(view);
+	SetSkyBoxMatrix(skyboxView);
 }
 
 

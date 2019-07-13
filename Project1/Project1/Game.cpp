@@ -159,58 +159,12 @@ void Game::LoadData()
 		}
 	}
 
-	// Left/right walls
-	/*q = Quaternion(Vector3::UnitX, Math::PiOver2);
-	for (int i = 0; i < 10; i++)
-	{
-		a = new PlaneActor(this);
-		a->SetPosition(Vector3(start + i * size, start - size, 0.0f));
-		a->SetRotation(q);
-
-		a = new PlaneActor(this);
-		a->SetPosition(Vector3(start + i * size, -start + size, 0.0f));
-		a->SetRotation(q);
-	}
-
-	q = Quaternion::Concatenate(q, Quaternion(Vector3::UnitZ, Math::PiOver2));
-	// Forward/back walls
-	for (int i = 0; i < 10; i++)
-	{
-		a = new PlaneActor(this);
-		a->SetPosition(Vector3(start - size, start + i * size, 0.0f));
-		a->SetRotation(q);
-
-		a = new PlaneActor(this);
-		a->SetPosition(Vector3(-start + size, start + i * size, 0.0f));
-		a->SetRotation(q);
-	}*/
-
-	//creating actors
-
-	/*Actor* a = nullptr;
-	Quaternion q;
-
-	// Setup floor
-	const float start = -1250.0f;
-	const float size = 250.0f;
-	for (int i = 0; i < 10; i++)
-	{
-		for (int j = 0; j < 10; j++)
-		{
-			a = new PlaneActor(this);
-			a->SetPosition(Vector3(start + i * size, start + j * size, -100.0f));
-		}
-	}*/
-
-	//followActor = new FollowActor(this);
-	//followActor->SetScale(20);
-
 	a = new Actor(this);
 	//mc = new MeshComponent(a);
 	//mc->SetMesh(this->GetRenderer()->GetMesh("Assets / stall.obj"));
-	a->SetMesh(this->GetRenderer()->GetMesh("Assets/shark.obj","Assets/Cube.png"));
-	a->SetPosition(Vector3(0,25,-50));
-	a->SetScale(20);
+	a->SetMesh(this->GetRenderer()->GetMesh("Assets/shark.obj","Assets/Default.png"));
+	a->SetPosition(Vector3(0,25,-100));
+	a->SetScale(10);
 	a->SetRotation(Quaternion(a->GetForward(), Math::Pi / 2));
 	//a->SetRotation(Quaternion(a->GetUp(), Math::Pi / 2));
 
@@ -225,6 +179,28 @@ void Game::LoadData()
 	//cameraActor = new CameraActor(this);
 	fpsActor = new FPSActor(this);
 	//car = new Car(this);
+
+	std::vector<std::string> skybox
+	{
+		"Assets/skybox/posx.jpg",
+		"Assets/skybox/negx.jpg",
+		"Assets/skybox/posy.jpg",
+		"Assets/skybox/negy.jpg",
+		"Assets/skybox/posz.jpg",
+		"Assets/skybox/negz.jpg",
+	};
+
+	/*std::vector<std::string> skybox
+	{
+		"Assets/skybox/top.jpg",
+		"Assets/skybox/bottom.jpg",
+		"Assets/skybox/front.jpg",
+		"Assets/skybox/back.jpg",
+		"Assets/skybox/right.jpg",
+		"Assets/skybox/left.jpg",
+	};*/
+
+	renderer->LoadSkybox(skybox);
 }
 
 void Game::UnloadData()

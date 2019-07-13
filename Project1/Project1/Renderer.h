@@ -7,6 +7,7 @@
 #include "Math.h"
 #include"DirectionalLight.h"
 #include"SpriteComponent.h"
+#include"Skybox.h"
 class Renderer
 {
 public:
@@ -27,6 +28,8 @@ public:
 
 	void RemoveMesh(class MeshComponent* mesh);
 
+	bool LoadSkybox(std::vector<std::string> skyboxTextures);
+
 	class Texture* GetTexture(const std::string& filename);
 
 	class Mesh* GetMesh(const std::string& filename,std::string texture="default");
@@ -35,6 +38,7 @@ public:
 	DirectionalLight& GetDirectionalLight() { return directionLight; }
 
 	void SetViewMatrix(Matrix4 view) { this->view = view; }
+	void SetSkyboxView(Matrix4 view) { skyboxView = view; }
 
 private:
 	bool LoadShaders();
@@ -46,6 +50,7 @@ private:
 	std::map<std::string, class Mesh*> meshes;
 	std::vector<class MeshComponent*> meshComponents;
 	std::vector<class SkeletalMeshComponent*> skeletalMeshComponent;
+	Skybox* skybox;
 
 	class Game* game;
 
@@ -55,10 +60,13 @@ private:
 	class Shader* meshShader;
 	//skinned mesh shader
 	class Shader* skinnedMeshShader;
+	//skybox shader
+	class Shader* skyboxShader;
 
 	//Matrices for view and projection
 	Matrix4 view;
 	Matrix4 projection;
+	Matrix4 skyboxView;
 	//sprite vertex array
 	class VertexArray* spriteVerts;
 

@@ -31,8 +31,8 @@ bool Renderer::Initialize()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	//Set up the version
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
 
 	//Requesting a color buffer for 8 bits per RGBA channel
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -97,6 +97,10 @@ void Renderer::UnloadData()
 		delete i.second;
 	}
 	textures.clear();
+	if (skybox)
+	{
+		delete skybox;
+	}
 }
 
 void Renderer::Draw()
@@ -106,6 +110,23 @@ void Renderer::Draw()
 
 	//Clear the buffer
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+	//drawing the skybox
+	glDisable(GL_DEPTH_TEST);
+
+	glDepthMask(GL_FALSE);
+
+	Quaternion roll = Quaternion(Vector3::UnitX, (Math::PiOver2));
+	Quaternion yaw = Quaternion(Vector3::UnitZ, Math::PiOver2);
+
+	skyboxShader->SetActive();
+	skyboxShader->SetMatrixUniform("uViewProj", skyboxView*projection);
+	skyboxShader->SetMatrixUniform("view", view);
+	skyboxShader->SetMatrixUniform("proj", projection);
+	skyboxShader->SetMatrixUniform("rot", Matrix4::CreateFromQuaternion(roll)*Matrix4::CreateFromQuaternion(yaw));
+	skybox->Draw();
+	glDepthMask(GL_TRUE);
+
 
 	//drawing the meshes
 	glEnable(GL_DEPTH_TEST);
@@ -256,6 +277,13 @@ bool Renderer::LoadShaders()
 	meshShader->SetActive();
 	//skinnedMeshShader->SetActive();
 
+	skyboxShader = new Shader();
+
+	if (!skyboxShader->Load("Skybox.vert", "Skybox.frag"))
+	{
+		return false;
+	}
+
 	//Creating a view matrix
 	view = Matrix4::CreateLookAt(
 		Vector3::Zero, //eye
@@ -274,6 +302,7 @@ bool Renderer::LoadShaders()
 
 	meshShader->SetMatrixUniform("uViewProj", view*projection);
 	skinnedMeshShader->SetMatrixUniform("uViewProj", view*projection);
+	skyboxShader->SetMatrixUniform("uViewProj", view*projection);
 
 	return true;
 }
@@ -331,3 +360,20 @@ void Renderer::RemoveMesh(MeshComponent* mesh)
 
 	meshComponents.erase(std::remove(meshComponents.begin(), meshComponents.end(), mesh), meshComponents.end());
 }
+
+bool Renderer:: LoadSkybox(std::vector<std::string> skyboxTextures)
+{
+	skybox = new Skybox();
+
+	if (skybox)
+	{
+		skybox->LoadCubeMap(skyboxTextures);
+
+		bool success = skybox->GenerateVertexArray();
+
+		if (success) return true;
+	}
+
+	return false;
+}
+

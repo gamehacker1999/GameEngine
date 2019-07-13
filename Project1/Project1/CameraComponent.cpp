@@ -18,3 +18,10 @@ void CameraComponent::SetViewMatrix(const Matrix4& view)
 	Game* game = mOwner->GetGame();
 	game->GetRenderer()->SetViewMatrix(view);
 }
+
+void CameraComponent::SetSkyBoxMatrix(const Matrix4& skyboxView)
+{
+	Game* game = mOwner->GetGame();
+	game->GetRenderer()->SetSkyboxView(skyboxView);
+}
+

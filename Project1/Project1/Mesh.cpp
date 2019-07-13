@@ -161,97 +161,51 @@ bool Mesh::LoadOBJ(std::string & fileName, Renderer * renderer, std::string text
 				words.emplace_back(word);
 			}
 
-			//splitting each vertex from the normal to get the index coordinate
-			std::vector<std::string> vertex1; //this holds the first vertex of the triangle 
-			std::vector<std::string> vertex2; //this holds the second vertex of the triangle
-			std::vector<std::string> vertex3; // this holds the third vertex of the triangle
+			std::vector<std::vector<std::string>> listOfFaces;
 
-			pos = 0;
-			curPos = 0;
-			while (pos <= words[1].length())
+			for (int i = 0; i < words.size()-1; i++)
 			{
-				(pos = words[1].find("/", curPos));
-				std::string word = words[1].substr(curPos, pos - curPos);
-				curPos = pos + 1;
-				vertex1.emplace_back(word);
+				std::vector<std::string> vertex;
+
+				pos = 0;
+				curPos = 0;
+
+				while (pos <= words[i+1].length())
+				{
+					(pos = words[i+1].find("/", curPos));
+					std::string word = words[i+1].substr(curPos, pos - curPos);
+					curPos = pos + 1;
+					vertex.emplace_back(word);
+				}
+
+				listOfFaces.emplace_back(vertex);
 			}
 
-			pos = 0;
-			curPos = 0;
-			while (pos <= words[2].length())
+			std::string firstVert = listOfFaces[0][0];
+			for (int i = 1; i < listOfFaces.size()-1; i++)
 			{
-				(pos = words[2].find("/", curPos));
-				std::string word = words[2].substr(curPos, pos - curPos);
-				curPos = pos + 1;
-				vertex2.emplace_back(word);
+				indices.emplace_back(std::stoi(firstVert)-1);
+				indices.emplace_back(std::stoi(listOfFaces[i][0])-1);
+				indices.emplace_back(std::stoi(listOfFaces[i+1][0])-1);
 			}
 
-			pos = 0;
-			curPos = 0;
-			while (pos <= words[3].length())
+			for (int i = 0; i < listOfFaces.size(); i++)
 			{
-				(pos = words[3].find("/", curPos));
-				std::string word = words[3].substr(curPos, pos - curPos);
-				curPos = pos + 1;
-				vertex3.emplace_back(word);
+				int location = 8 * (std::stoi(listOfFaces[i][0]) - 1);
+
+				vertices[location] = tempVertices[std::stoi(listOfFaces[i][0]) - 1].x;
+				vertices[location + 1] = tempVertices[std::stoi(listOfFaces[i][0]) - 1].y;
+				vertices[location + 2] = tempVertices[std::stoi(listOfFaces[i][0]) - 1].z;
+
+				//the three coordinates of the normal position
+				vertices[location + 3] = tempNormals[std::stoi(listOfFaces[i][2]) - 1].x;
+				vertices[location + 4] = tempNormals[std::stoi(listOfFaces[i][2]) - 1].y;
+				vertices[location + 5] = tempNormals[std::stoi(listOfFaces[i][2]) - 1].z;
+
+				//the three coordinates of the texture coordinates
+				vertices[location + 6] = tempTextureCoord[std::stoi(listOfFaces[i][1]) - 1].vx;
+				vertices[location + 7] = 1 - tempTextureCoord[std::stoi(listOfFaces[i][1]) - 1].vy;
 			}
-
-#pragma region adding the three vertices of the triangle to the vertex array object
-
-			indices.emplace_back(std::stoi(vertex1[0]) - 1);
-			indices.emplace_back(std::stoi(vertex2[0]) - 1);
-			indices.emplace_back(std::stoi(vertex3[0]) - 1);
-
-			//adding the first vertex of this triangle to the vertex array -----------------
-			int location = 8 * (std::stoi(vertex1[0]) - 1);
-
-			//the three coordinated of the vertex position
-			vertices[location] = tempVertices[std::stoi(vertex1[0]) - 1].x;
-			vertices[location + 1] = tempVertices[std::stoi(vertex1[0]) - 1].y;
-			vertices[location + 2] = tempVertices[std::stoi(vertex1[0]) - 1].z;
-
-			//the three coordinates of the normal position
-			vertices[location + 3] = tempNormals[std::stoi(vertex1[2]) - 1].x;
-			vertices[location + 4] = tempNormals[std::stoi(vertex1[2]) - 1].y;
-			vertices[location + 5] = tempNormals[std::stoi(vertex1[2]) - 1].z;
-
-			//the three coordinates of the texture coordinates
-			vertices[location + 6] = tempTextureCoord[std::stoi(vertex1[1]) - 1].vx;
-			vertices[location + 7] = 1 - tempTextureCoord[std::stoi(vertex1[1]) - 1].vy;
-
-			//adding the second vertex ----------------------------------------------------------
-			location = 8 * (std::stoi(vertex2[0]) - 1);
-
-			//the three coordinated of the vertex position
-			vertices[location] = tempVertices[std::stoi(vertex2[0]) - 1].x;
-			vertices[location + 1] = tempVertices[std::stoi(vertex2[0]) - 1].y;
-			vertices[location + 2] = tempVertices[std::stoi(vertex2[0]) - 1].z;
-
-			//the three coordinates of the normal position
-			vertices[location + 3] = tempNormals[std::stoi(vertex2[2]) - 1].x;
-			vertices[location + 4] = tempNormals[std::stoi(vertex2[2]) - 1].y;
-			vertices[location + 5] = tempNormals[std::stoi(vertex2[2]) - 1].z;
-
-			//the three coordinates of the texture coordinates
-			vertices[location + 6] = tempTextureCoord[std::stoi(vertex2[1]) - 1].vx;
-			vertices[location + 7] = 1 - tempTextureCoord[std::stoi(vertex2[1])-1].vy;
-
-			//adding the third vertex ----------------------------------------------------
-			location = 8 * (std::stoi(vertex3[0]) - 1);
-
-			//the three coordinated of the vertex position
-			vertices[location] = tempVertices[std::stoi(vertex3[0]) - 1].x;
-			vertices[location + 1] = tempVertices[std::stoi(vertex3[0]) - 1].y;
-			vertices[location + 2] = tempVertices[std::stoi(vertex3[0]) - 1].z;
-
-			//the three coordinates of the normal position
-			vertices[location + 3] = tempNormals[std::stoi(vertex3[2]) - 1].x;
-			vertices[location + 4] = tempNormals[std::stoi(vertex3[2]) - 1].y;
-			vertices[location + 5] = tempNormals[std::stoi(vertex3[2]) - 1].z;
-
-			//the three coordinates of the texture coordinates
-			vertices[location + 6] = tempTextureCoord[std::stoi(vertex3[1]) - 1].vx;
-			vertices[location + 7] = 1 - tempTextureCoord[std::stoi(vertex3[1]) - 1].vy;
 
 #pragma endregion
 
