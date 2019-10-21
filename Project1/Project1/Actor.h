@@ -2,9 +2,15 @@
 #include <SDL.h>
 #include "Component.h"
 #include "Vector2.h"
+#include"Math.h"
 #include<math.h>
 #include <algorithm>
 #include <vector>
+//#include"MeshComponent.h"
+//#include"Mesh.h"
+
+class MeshComponent;
+
 class Actor
 {
 public:
@@ -31,14 +37,18 @@ public:
 	//Getters and setters
 	State GetState();
 	float GetScale() const { return mScale; }
-	Vector2 GetPosition() const { return position; }
-	float GetRotation() const { return mRotation; }
+	Vector3 GetPosition() const { return position; }
+	Quaternion GetRotation() const { return mRotation; }
 	Game* GetGame() const { return mGame; }
-	Vector2 GetForward() const { return Vector2(cos(mRotation),-sin(mRotation)); }
+	Vector3 GetForward() const { return Vector3::Transform(Vector3::UnitX, mRotation); }
+	Vector3 GetRight() const { return Vector3::Transform(Vector3::UnitY,mRotation); }
+	Vector3 GetUp() const { return Vector3::Transform(Vector3::UnitZ, mRotation); }
+	Matrix4& GetWorldTransform() { return worldTransform; }
 
-	void SetPosition(Vector2 pos) { position = pos; }
+	void SetPosition(Vector3 pos) { position = pos; }
 	void SetScale(float scale) { mScale = scale; }
-	void SetRotation(float rot) { mRotation = rot; }
+	void SetRotation(Quaternion rot) { mRotation = rot; }
+	void SetMesh(class Mesh* mesh);
 
 	//Add remove components
 	void AddComponent(class Component* component);
@@ -49,19 +59,29 @@ public:
 	//Actor input called by child actors
 	virtual void ActorInput(const Uint8* state);
 
+	//Transform actor
+	void CreateWorldTransform();
+
+
 private:
 	//Actor state
 	State mState;
 
 	//Transform
-	Vector2 position;
+	Vector3 position;
 	float mScale;
-	float mRotation;
+	Quaternion mRotation;
+
+	//Members to compute transform
+	Matrix4 worldTransform; //Assume we have a z component with a w component
+	bool recomputeWorldTransform; //Recompute transform if any of the properties change
 
 	//List of components
 	std::vector<class Component* > mComponents;
 
 	class Game* mGame;
+
+	MeshComponent* meshComp;
 
 };
 

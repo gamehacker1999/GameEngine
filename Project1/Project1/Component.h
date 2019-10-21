@@ -13,6 +13,9 @@ public:
 		virtual void Update(float deltaTime);
 		virtual void ProcessInput(const Uint8* state);
 		int GetUpdateOrder() const { return mUpdateOrder; }
+
+		//update the world transform
+		virtual void OnUpdateWorldTransform();
 protected:
 	// Owning actor
 	class Actor* mOwner;

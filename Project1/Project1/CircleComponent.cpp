@@ -12,7 +12,7 @@ float CircleComponent::GetRadius() const
 	return radius;
 }
 
-Vector2 CircleComponent::GetCenter() const
+Vector3 CircleComponent::GetCenter() const
 {
 	return mOwner->GetPosition();
 }

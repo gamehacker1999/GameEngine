@@ -2,15 +2,17 @@
 #include "Actor.h"
 #include "Game.h"
 #include "Vector2.h"
+#include"MeshComponent.h"
 
 
 Actor::Actor(class Game* game)
 {
 	mGame = game;
 	mState = State::EActive;
-	position = Vector2();
-	mRotation = 0;
+	position = Vector3(-512,384,0);
+	mRotation = Quaternion::Identity;
 	mScale = 1.0f;
+	recomputeWorldTransform = true; //atleast one transform will happen
 	mGame->AddActor(this);
 }
 
@@ -33,8 +35,10 @@ void Actor::Update(float deltaTime)
 {
 	if (mState == State::EActive)
 	{
+		CreateWorldTransform();
 		UpdateComponents(deltaTime);
 		UpdateActor(deltaTime);
+		CreateWorldTransform();
 	}
 }
 
@@ -49,6 +53,12 @@ void Actor::UpdateComponents(float deltaTime)
 	{
 		comp->Update(deltaTime);
 	}
+}
+
+void Actor::SetMesh(Mesh * mesh)
+{
+	meshComp = new MeshComponent(this); 
+	meshComp->SetMesh(mesh); 
 }
 
 void Actor::AddComponent(Component* component)
@@ -94,4 +104,23 @@ void Actor::ProcessInput(const Uint8* state)
 
 void Actor::ActorInput(const Uint8 * state)
 {
+}
+
+void Actor::CreateWorldTransform()
+{
+	if (recomputeWorldTransform)
+	{
+		//recomputeWorldTransform = false;
+		//Tranform order is translation, rotation, scale
+		//They have to be multiplied in reverse order because 
+		//Transform is computed right to left
+		worldTransform = Matrix4::CreateScale(mScale);
+		worldTransform *= Matrix4::CreateFromQuaternion(mRotation);
+		worldTransform *= Matrix4::CreateTranslation(position);
+
+		for (auto comp : mComponents)
+		{
+			comp->OnUpdateWorldTransform();
+		}
+	}
 }

@@ -25,3 +25,7 @@ void Component::Update(float deltaTime)
 void Component::ProcessInput(const Uint8 * state)
 {
 }
+
+void Component::OnUpdateWorldTransform()
+{
+}

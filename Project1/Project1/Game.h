@@ -5,6 +5,16 @@
 #include "Vector2.h"
 #include "SpriteComponent.h"
 #include "Ship.h"
+#include"VertexArray.h"
+#include "Shader.h"
+#include"Texture.h"
+#include"Renderer.h"
+#include"CameraActor.h"
+#include"FPSActor.h"
+#include"Car.h"
+#include"FollowActor.h"
+#include"Skeleton.h"
+#include"Animation.h"
 class Game
 {
 public:
@@ -20,12 +30,11 @@ public:
 	void AddActor(class Actor* actor);
 	void RemoveActor(class  Actor* actor);
 
-	void AddSprite(class SpriteComponent* sprite);
-	void RemoveSprite(class SpriteComponent* sprite);
+	class Renderer* GetRenderer() const { return renderer; }
 
-	SDL_Texture* GetTexture(std::string file);
+	class Skeleton* GetSkeleton(const std::string& fileName);
 
-	SDL_Texture* LoadTexture(std::string filename);
+	class Animation* GetAnimation(const std::string& fileName);
 
 	~Game();
 
@@ -34,13 +43,6 @@ private:
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();
-
-
-
-	//Window created by SDL
-	SDL_Window* mWindow;
-	//Renderer
-	SDL_Renderer* mRenderer;
 	//game should continue to run
 	bool mIsRunning;
 
@@ -54,19 +56,29 @@ private:
 	std::vector < class  Actor* > mPendingActors;
 	bool mUpdatingActors;
 
-	//Texture fields 
-	std::map<std::string, SDL_Texture*> textures;
+	//map of skeletons
+	std::map<std::string, class Skeleton*> mSkeletons;
+
+	//map of animations
+	std::map<std::string, class Animation*> mAnimations;
 
 	//Function to load all data
 	void LoadData();
 	void UnloadData();
 
+	//Initialize sprite verts
+	float vertexBuffer[4];
+	unsigned int indexBuffer[6];
 	//Fields and functions for sprites
-	std::vector <class SpriteComponent*> mSprites;
-
 	//Ship
 	class Ship* mShip;
+	class CameraActor* cameraActor;
+	class FPSActor* fpsActor;
+	class Car* car;
+	class FollowActor* followActor;
 
+	//Renderer
+	class Renderer* renderer;
 	
 };
 
