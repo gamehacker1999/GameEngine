@@ -1,2 +1,3 @@
 # GameEngine
-Component Based game engine using SDL 
+Rendering Engine using OpenGL and SDL
+
